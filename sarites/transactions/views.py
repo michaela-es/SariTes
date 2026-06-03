@@ -91,11 +91,24 @@ def quick_sale(request):
             if ttype == 'sale':
                 ttype = 'credit_sale'
 
-        total = float(item.price) * parsed['qty']
+        qty = parsed['qty']
+        reduces_stock = ttype in ('sale', 'credit_sale', 'stock_out')
+
+        if reduces_stock and item.qty < qty:
+            return JsonResponse({'error': f'Not enough stock. {item.name} has {item.qty}, you need {qty}.'}, status=400)
+
+        total = float(item.price) * qty
+
+        if reduces_stock:
+            item.qty -= qty
+        elif ttype == 'stock_in':
+            item.qty += qty
+        item.save(update_fields=['qty'])
+
         transaction = Transaction.objects.create(
             item=item,
             transaction_type=ttype,
-            qty=parsed['qty'],
+            qty=qty,
             total=total,
             creditor=creditor,
         )
@@ -103,7 +116,7 @@ def quick_sale(request):
         return JsonResponse({
             'id': transaction.id,
             'item': item.name,
-            'qty': parsed['qty'],
+            'qty': qty,
             'total': total,
             'type': ttype,
         })

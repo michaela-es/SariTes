@@ -308,6 +308,7 @@ if (nlpInput) {
                     let html = `<span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium ${tc} mr-2">${typeLabels[data.transaction_type] || data.transaction_type}</span>`;
                     html += `<span class="text-green-700 font-semibold">${data.item.qty}x ${data.item.name} = ₱${data.item.total.toFixed(2)}</span>`;
                     if (data.creditor) html += ` <span class="inline-block px-2 py-0.5 rounded-full text-xs bg-cyan-100 text-cyan-700">@${data.creditor.name}</span>`;
+                    if (data.low_stock) html += `<div class="mt-1 text-red-600 text-xs font-medium"><i class="bi bi-exclamation-triangle"></i> Only ${data.available} in stock — cannot sell ${data.item.qty}</div>`;
                     p.innerHTML = html;
                 } else {
                     currentNlpResult = null;
@@ -324,6 +325,7 @@ if (nlpInput) {
 function quickSale() {
     const val = nlpInput.value.trim();
     if (!val) return;
+    if (currentNlpResult && currentNlpResult.low_stock) { alert('Not enough stock!'); return; }
     fetch('{% url "transactions:quick_sale" %}', {
         method: 'POST',
         headers: {'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}'},

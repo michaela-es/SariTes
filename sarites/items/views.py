@@ -101,6 +101,8 @@ def nlp_search(request):
 
     if match:
         total = float(match.price) * parsed['qty']
+        reduces_stock = parsed['transaction_type'] in ('sale', 'credit_sale', 'stock_out')
+        low_stock = reduces_stock and match.qty < parsed['qty']
         return JsonResponse({
             'match': True,
             'transaction_type': parsed['transaction_type'],
@@ -112,6 +114,8 @@ def nlp_search(request):
                 'total': total,
             },
             'creditor': creditor_data,
+            'low_stock': low_stock,
+            'available': match.qty,
         })
     return JsonResponse({
         'match': False,
