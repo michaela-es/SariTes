@@ -85,9 +85,10 @@ def quick_sale(request):
         ttype = parsed.get('transaction_type', 'sale')
         if parsed.get('creditor'):
             from creditors.models import Creditor
-            creditor = Creditor.objects.filter(name__icontains=parsed['creditor']).first()
+            name = parsed['creditor'].strip().title()
+            creditor = Creditor.objects.filter(name__iexact=name).first()
             if not creditor:
-                creditor = Creditor.objects.create(name=parsed['creditor'])
+                creditor = Creditor.objects.create(name=name)
             if ttype == 'sale':
                 ttype = 'credit_sale'
 
