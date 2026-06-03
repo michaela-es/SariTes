@@ -1,0 +1,47 @@
+# SariTes
+
+A Django inventory management system built for sari-sari stores, evolved from the **CSIT327-G1-InnoVentory** project.
+
+## Key Difference: NLP Quick Entry
+
+Unlike Innoventory's traditional form-based transaction logging, SariTes uses a **natural language input** for faster, more intuitive logging:
+
+```
+5 Coke          → sell 5 Coke (defaults to Sale)
++10 Rice        → stock in 10 Rice
+-3 Sardines     → stock out 3 Sardines
+2 Coffee @Juan  → sell 2 Coffee on credit to Juan
+```
+
+This reduces a multi-click form to a single text entry, making day-to-day operations faster and more familiar for store owners.
+
+## Features
+
+- **Quick Entry** — natural language transaction logging with autocomplete
+- **Items** — product catalog with stock level tracking and Excel import
+- **Transactions** — full transaction history with date/type filtering
+- **Creditors** — credit sale tracking with Mark Paid / Mark All Paid
+- **Analytics** — Chart.js dashboards for sales trends, top items, and creditor balances
+- **Mobile responsive** — works on phones and tablets
+- **HTMX modals** — all CRUD forms in modals, no page reloads
+
+## Tech Stack
+
+- Django 5
+- SQLite / PostgreSQL (via Supabase)
+- Tailwind CSS (CDN)
+- HTMX
+- Chart.js
+- Bootstrap Icons
+
+## Setup
+
+```bash
+pip install -r requirements.txt
+cd sarites
+python manage.py migrate
+python manage.py seed        # sample data
+python manage.py runserver
+```
+
+For Supabase: copy `.env.example` → `.env`, fill in `DATABASE_URL`, then `python manage.py migrate`.
