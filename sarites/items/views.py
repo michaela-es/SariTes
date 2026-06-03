@@ -64,6 +64,15 @@ def upload_excel(request):
 
 
 @login_required
+def item_suggest(request):
+    q = request.GET.get('q', '')
+    if len(q) < 1:
+        return JsonResponse([], safe=False)
+    items = Item.objects.filter(name__icontains=q).values('id', 'name', 'price', 'qty')[:8]
+    return JsonResponse(list(items), safe=False)
+
+
+@login_required
 def nlp_search(request):
     text = request.GET.get('q', '')
     parsed = parse_nlp_input(text)
@@ -83,6 +92,7 @@ def nlp_search(request):
         total = float(match.price) * parsed['qty']
         return JsonResponse({
             'match': True,
+            'transaction_type': parsed['transaction_type'],
             'item': {
                 'id': match.id,
                 'name': match.name,
@@ -95,5 +105,6 @@ def nlp_search(request):
     return JsonResponse({
         'match': False,
         'parsed_name': parsed['name'],
+        'transaction_type': parsed['transaction_type'],
         'creditor': creditor_data,
     })

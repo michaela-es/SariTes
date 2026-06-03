@@ -37,7 +37,19 @@ def import_items_from_excel(file):
 
 
 def parse_nlp_input(text):
-    parts = text.strip().split(None, 1)
+    raw = text.strip()
+    if not raw:
+        return None
+
+    ttype = 'sale'
+    if raw.startswith('+'):
+        ttype = 'stock_in'
+        raw = raw[1:].strip()
+    elif raw.startswith('-'):
+        ttype = 'stock_out'
+        raw = raw[1:].strip()
+
+    parts = raw.split(None, 1)
     if not parts:
         return None
     try:
@@ -45,7 +57,7 @@ def parse_nlp_input(text):
         rest = parts[1] if len(parts) > 1 else ''
     except (ValueError, IndexError):
         qty = 1
-        rest = text.strip()
+        rest = raw
 
     name = rest.strip()
     if not name:
@@ -56,4 +68,9 @@ def parse_nlp_input(text):
         name, _, creditor = name.partition('@')
         creditor = creditor.strip()
 
-    return {'qty': qty, 'name': name.strip(), 'creditor': creditor}
+    return {
+        'qty': qty,
+        'name': name.strip(),
+        'creditor': creditor,
+        'transaction_type': ttype,
+    }

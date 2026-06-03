@@ -10,4 +10,5 @@ urlpatterns = [
     path('item/<int:pk>/delete/', views.item_delete, name='item_delete'),
     path('upload-excel/', views.upload_excel, name='upload_excel'),
     path('nlp-search/', views.nlp_search, name='nlp_search'),
+    path('item-suggest/', views.item_suggest, name='item_suggest'),
 ]

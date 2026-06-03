@@ -79,11 +79,11 @@ def quick_sale(request):
 
         item = items.first()
         creditor = None
-        ttype = 'sale'
+        ttype = parsed.get('transaction_type', 'sale')
         if parsed.get('creditor'):
             from creditors.models import Creditor
             creditor = Creditor.objects.filter(name__icontains=parsed['creditor']).first()
-            if creditor:
+            if creditor and ttype == 'sale':
                 ttype = 'credit_sale'
 
         total = float(item.price) * parsed['qty']
