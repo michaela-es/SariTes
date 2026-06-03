@@ -124,9 +124,22 @@ def mark_paid(request, pk):
         transaction.transaction_type = 'sale'
         transaction.save(update_fields=['transaction_type'])
         if request.headers.get('HX-Request'):
-            from django.http import HttpResponse
             response = HttpResponse()
             response['HX-Refresh'] = 'true'
             return response
         return redirect('transaction_list')
+    return JsonResponse({'error': 'POST required'}, status=405)
+
+
+@login_required
+def mark_all_paid(request, creditor_id):
+    if request.method == 'POST':
+        count = Transaction.objects.filter(
+            creditor_id=creditor_id, transaction_type='credit_sale'
+        ).update(transaction_type='sale')
+        if request.headers.get('HX-Request'):
+            response = HttpResponse()
+            response['HX-Refresh'] = 'true'
+            return response
+        return redirect(request.META.get('HTTP_REFERER', '/'))
     return JsonResponse({'error': 'POST required'}, status=405)
