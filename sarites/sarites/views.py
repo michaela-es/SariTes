@@ -35,7 +35,7 @@ def dashboard(request):
     items = Item.objects.annotate(tx_count=Count('transactions')).all()
 
     today_sales = Transaction.objects.filter(
-        transaction_type__in=['sale', 'credit_sale'],
+        transaction_type='sale',
         created_at__date=today,
     ).aggregate(total=Sum('total'))['total'] or 0
 
