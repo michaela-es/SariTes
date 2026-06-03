@@ -20,6 +20,11 @@
         </button>
     </li>
     <li class="nav-item" role="presentation">
+        <button class="nav-link" id="items-tab" data-bs-toggle="tab" data-bs-target="#items" type="button" role="tab">
+            <i class="bi bi-box"></i> Items
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
         <button class="nav-link" id="txns-tab" data-bs-toggle="tab" data-bs-target="#txns" type="button" role="tab">
             <i class="bi bi-arrow-left-right"></i> Transactions
         </button>
@@ -116,7 +121,62 @@
         </div>
     </div>
 
-    {# ── TAB 2: FULL TRANSACTIONS ── #}
+    {# ── TAB 2: ITEMS OVERVIEW ── #}
+    <div class="tab-pane fade" id="items" role="tabpanel">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <span class="badge bg-success me-1" id="highCount"></span>
+                <span class="badge bg-warning text-dark me-1" id="medCount"></span>
+                <span class="badge bg-danger me-1" id="lowCount"></span>
+            </div>
+            <a href="/items/" class="btn btn-sm btn-outline-primary"><i class="bi bi-boxes"></i> Manage Items</a>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <input type="text" id="items-search" class="form-control form-control-sm" placeholder="Filter items...">
+            </div>
+            <div class="col-md-3">
+                <select id="items-stock-filter" class="form-select form-select-sm">
+                    <option value="">All Stock Levels</option>
+                    <option value="low">Low Stock (≤ 10)</option>
+                    <option value="medium">Medium (11–30)</option>
+                    <option value="high">High (31+)</option>
+                </select>
+            </div>
+        </div>
+        <div class="table-responsive" style="max-height:55vh;overflow-y:auto">
+            <table class="table table-sm table-hover" id="items-table">
+                <thead class="table-dark sticky-top">
+                    <tr>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>On Hand</th>
+                        <th>Transactions</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr class="item-row" data-name="{{ item.name|lower }}" data-stock="{{ item.qty }}">
+                        <td>{{ item.name }}</td>
+                        <td>₱{{ item.price }}</td>
+                        <td>{{ item.qty }}</td>
+                        <td>{{ item.tx_count }}</td>
+                        <td>
+                            <span class="badge {% if item.qty == 0 %}bg-danger{% elif item.qty <= 10 %}bg-warning text-dark{% else %}bg-success{% endif %}">
+                                {% if item.qty == 0 %}Out of Stock{% elif item.qty <= 10 %}Low{% else %}In Stock{% endif %}
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="6" class="text-center text-muted py-4">No items yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {# ── TAB 3: FULL TRANSACTIONS ── #}
     <div class="tab-pane fade" id="txns" role="tabpanel">
         <div class="d-flex flex-wrap gap-2 mb-3 align-items-center">
             <a href="?date=today" class="btn btn-sm {% if date_filter == 'today' %}btn-dark{% else %}btn-outline-secondary{% endif %}">Today</a>
@@ -335,6 +395,33 @@ if (excelForm) {
         });
     });
 }
+
+// ── ITEMS TAB FILTER ──
+function filterItems() {
+    const q = document.getElementById('items-search').value.toLowerCase();
+    const stockFilter = document.getElementById('items-stock-filter').value;
+    let low = 0, med = 0, high = 0;
+    document.querySelectorAll('.item-row').forEach(row => {
+        const name = row.dataset.name;
+        const stock = parseInt(row.dataset.stock);
+        const match = !q || name.includes(q);
+        let stockOk = true;
+        if (stockFilter === 'low') stockOk = stock <= 10;
+        else if (stockFilter === 'medium') stockOk = stock > 10 && stock <= 30;
+        else if (stockFilter === 'high') stockOk = stock > 30;
+        row.style.display = match && stockOk ? '' : 'none';
+        if (stock === 0) low++;
+        else if (stock <= 10) low++;
+        else if (stock <= 30) med++;
+        else high++;
+    });
+    document.getElementById('lowCount').textContent = `Out/Low: ${low}`;
+    document.getElementById('medCount').textContent = `Medium: ${med}`;
+    document.getElementById('highCount').textContent = `High: ${high}`;
+}
+document.getElementById('items-search')?.addEventListener('input', filterItems);
+document.getElementById('items-stock-filter')?.addEventListener('change', filterItems);
+document.querySelector('[data-bs-target="#items"]')?.addEventListener('shown.bs.tab', filterItems);
 
 // ── CHARTS ──
 let salesChart, typeChart, topItemsChart, creditorChart;

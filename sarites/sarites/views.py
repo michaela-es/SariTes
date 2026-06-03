@@ -32,6 +32,7 @@ def dashboard(request):
 
     recent = Transaction.objects.select_related('item', 'creditor').all()[:10]
     creditors = Creditor.objects.annotate(tx_count=Count('transactions')).all()
+    items = Item.objects.annotate(tx_count=Count('transactions')).all()
 
     selected_creditor = request.GET.get('creditor', '')
     creditor_detail = None
@@ -42,6 +43,7 @@ def dashboard(request):
         'recent': recent,
         'transactions': txs,
         'creditors': creditors,
+        'items': items,
         'creditor_detail': creditor_detail,
         'selected_creditor': selected_creditor,
         'date_filter': date_filter,
