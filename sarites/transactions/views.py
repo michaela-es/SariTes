@@ -116,7 +116,13 @@ def transaction_delete(request, pk):
     transaction = get_object_or_404(Transaction, pk=pk)
     if request.method == 'POST':
         transaction.delete()
+        if request.headers.get('HX-Request'):
+            response = HttpResponse()
+            response['HX-Refresh'] = 'true'
+            return response
         return redirect('transaction_list')
+    if request.headers.get('HX-Request'):
+        return render(request, 'transactions/transaction_confirm_delete.html', {'transaction': transaction})
     return render(request, 'transactions/transaction_confirm_delete.html', {'transaction': transaction})
 
 
