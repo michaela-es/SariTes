@@ -76,11 +76,10 @@ def quick_sale(request):
         if not parsed:
             return JsonResponse({'error': 'Could not parse input'}, status=400)
 
-        items = Item.objects.filter(name__icontains=parsed['name'])
-        if not items.exists():
-            return JsonResponse({'error': f'No item matching "{parsed["name"]}"'}, status=400)
-
-        item = items.first()
+        name = parsed['name'].strip().title()
+        item = Item.objects.filter(name__iexact=name).first()
+        if not item:
+            item = Item.objects.create(name=name, price=0, qty=0)
         creditor = None
         ttype = parsed.get('transaction_type', 'sale')
         if parsed.get('creditor'):

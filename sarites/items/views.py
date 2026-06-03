@@ -89,8 +89,8 @@ def nlp_search(request):
     if not parsed:
         return JsonResponse({'match': False})
 
-    items = Item.objects.filter(name__icontains=parsed['name'])
-    match = items.first()
+    name = parsed['name'].strip().title()
+    match = Item.objects.filter(name__iexact=name).first()
 
     creditor_data = None
     if parsed.get('creditor'):
