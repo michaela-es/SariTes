@@ -391,6 +391,7 @@ if (nlpInput) {
 
     nlpInput.addEventListener('blur', () => setTimeout(() => suggestDropdown.classList.add('hidden'), 200));
     nlpInput.addEventListener('focus', () => { if (suggestDropdown.children.length > 0) suggestDropdown.classList.remove('hidden'); });
+    nlpInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); quickSale(); } });
 }
 
 function quickSale() {
