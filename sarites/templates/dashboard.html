@@ -318,7 +318,7 @@
                     <td class="px-4 py-2.5 text-right font-medium">₱{{ c.total_balance|floatformat:2 }}</td>
                     <td class="px-4 py-2.5 text-right">{{ c.tx_count }}</td>
                     <td class="px-4 py-2.5 text-center">
-                        <a href="?creditor={{ c.id }}" class="text-cyan-600 hover:text-cyan-800 mr-2"><i class="bi bi-eye"></i></a>
+                        <a href="{% url 'creditors:creditor_detail' c.id %}" class="text-cyan-600 hover:text-cyan-800 mr-2"><i class="bi bi-eye"></i></a>
                         <button hx-get="{% url 'creditors:creditor_edit' c.pk %}" hx-target="#formModalContent" onclick="openModal('formModal')" class="text-gray-600 hover:text-gray-800 bg-transparent border-0 cursor-pointer"><i class="bi bi-pencil"></i></button>
                     </td>
                 </tr>

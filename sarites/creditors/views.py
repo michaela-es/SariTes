@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.db.models import Q
 from .models import Creditor
 from .forms import CreditorForm
+from transactions.models import Transaction
 
 
 @login_required
@@ -57,3 +58,13 @@ def creditor_delete(request, pk):
         creditor.delete()
         return redirect('creditor_list')
     return render(request, 'creditors/creditor_confirm_delete.html', {'creditor': creditor})
+
+
+@login_required
+def creditor_detail(request, pk):
+    creditor = get_object_or_404(Creditor, pk=pk)
+    transactions = Transaction.objects.filter(creditor=creditor).select_related('item').order_by('-created_at')
+    return render(request, 'creditors/creditor_detail.html', {
+        'creditor': creditor,
+        'transactions': transactions,
+    })
