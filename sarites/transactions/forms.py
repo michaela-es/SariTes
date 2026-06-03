@@ -1,6 +1,8 @@
 from django import forms
 from .models import Transaction
-from items.models import Item
+
+INPUT = 'w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-900 focus:outline-none'
+SELECT = 'w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-900 focus:outline-none'
 
 
 class TransactionForm(forms.ModelForm):
@@ -8,12 +10,12 @@ class TransactionForm(forms.ModelForm):
         model = Transaction
         fields = ['item', 'transaction_type', 'qty', 'total', 'creditor', 'notes']
         widgets = {
-            'item': forms.Select(attrs={'class': 'form-select'}),
-            'transaction_type': forms.Select(attrs={'class': 'form-select'}),
-            'qty': forms.NumberInput(attrs={'class': 'form-control'}),
-            'total': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
-            'creditor': forms.Select(attrs={'class': 'form-select'}),
-            'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
+            'item': forms.Select(attrs={'class': SELECT}),
+            'transaction_type': forms.Select(attrs={'class': SELECT}),
+            'qty': forms.NumberInput(attrs={'class': INPUT}),
+            'total': forms.NumberInput(attrs={'class': INPUT, 'step': '0.01'}),
+            'creditor': forms.Select(attrs={'class': SELECT}),
+            'notes': forms.Textarea(attrs={'class': INPUT, 'rows': 2}),
         }
 
     def __init__(self, *args, **kwargs):

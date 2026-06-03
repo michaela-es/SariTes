@@ -1,27 +1,27 @@
 {% extends 'base.html' %}
 {% block title %}Transactions{% endblock %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h3>Transactions</h3>
-    <a href="{% url 'transactions:transaction_create' %}" class="btn btn-primary btn-sm">
+<div class="flex items-center justify-between mb-6">
+    <h2 class="text-xl font-bold text-gray-900">Transactions</h2>
+    <a href="{% url 'transactions:transaction_create' %}" class="px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition flex items-center gap-1.5">
         <i class="bi bi-plus-lg"></i> New Transaction
     </a>
 </div>
 
-<div class="d-flex flex-wrap gap-2 mb-3 align-items-center">
-    <a href="{% url 'transactions:transaction_list' %}?date=today" class="btn btn-sm {% if date_filter == 'today' %}btn-dark{% else %}btn-outline-secondary{% endif %}">Today</a>
-    <a href="{% url 'transactions:transaction_list' %}?date=week" class="btn btn-sm {% if date_filter == 'week' %}btn-dark{% else %}btn-outline-secondary{% endif %}">This Week</a>
-    <a href="{% url 'transactions:transaction_list' %}?date=month" class="btn btn-sm {% if date_filter == 'month' %}btn-dark{% else %}btn-outline-secondary{% endif %}">This Month</a>
-    <div class="vr"></div>
-    <form method="get" class="d-flex gap-1 align-items-center">
-        <input type="date" name="from" class="form-control form-control-sm" value="{{ date_from }}" style="width:140px">
-        <span>—</span>
-        <input type="date" name="to" class="form-control form-control-sm" value="{{ date_to }}" style="width:140px">
-        <button class="btn btn-sm btn-outline-primary"><i class="bi bi-funnel"></i></button>
-        {% if date_filter or date_from %}<a href="{% url 'transactions:transaction_list' %}" class="btn btn-sm btn-outline-danger"><i class="bi bi-x"></i></a>{% endif %}
+<div class="flex flex-wrap items-center gap-2 mb-4">
+    <a href="{% url 'transactions:transaction_list' %}?date=today" class="px-3 py-1.5 rounded-lg text-xs font-medium border transition {% if date_filter == 'today' %}bg-gray-900 text-white border-gray-900{% else %}bg-white text-gray-600 border-gray-300 hover:bg-gray-100{% endif %}">Today</a>
+    <a href="{% url 'transactions:transaction_list' %}?date=week" class="px-3 py-1.5 rounded-lg text-xs font-medium border transition {% if date_filter == 'week' %}bg-gray-900 text-white border-gray-900{% else %}bg-white text-gray-600 border-gray-300 hover:bg-gray-100{% endif %}">This Week</a>
+    <a href="{% url 'transactions:transaction_list' %}?date=month" class="px-3 py-1.5 rounded-lg text-xs font-medium border transition {% if date_filter == 'month' %}bg-gray-900 text-white border-gray-900{% else %}bg-white text-gray-600 border-gray-300 hover:bg-gray-100{% endif %}">This Month</a>
+    <span class="w-px h-6 bg-gray-300"></span>
+    <form method="get" class="flex items-center gap-1">
+        <input type="date" name="from" value="{{ date_from }}" class="px-2 py-1.5 border border-gray-300 rounded-lg text-xs w-32 focus:ring-2 focus:ring-gray-900 focus:outline-none">
+        <span class="text-gray-400">—</span>
+        <input type="date" name="to" value="{{ date_to }}" class="px-2 py-1.5 border border-gray-300 rounded-lg text-xs w-32 focus:ring-2 focus:ring-gray-900 focus:outline-none">
+        <button class="px-3 py-1.5 bg-gray-900 text-white rounded-lg text-xs font-medium hover:bg-gray-800 transition"><i class="bi bi-funnel"></i></button>
+        {% if date_filter or date_from %}<a href="{% url 'transactions:transaction_list' %}" class="px-3 py-1.5 bg-red-500 text-white rounded-lg text-xs font-medium hover:bg-red-600 transition"><i class="bi bi-x"></i></a>{% endif %}
     </form>
-    <div class="vr"></div>
-    <select name="type" class="form-select form-select-sm w-auto" onchange="window.location='{% url 'transactions:transaction_list' %}?date={{ date_filter }}&type='+this.value">
+    <span class="w-px h-6 bg-gray-300"></span>
+    <select onchange="window.location='{% url 'transactions:transaction_list' %}?date={{ date_filter }}&type='+this.value" class="px-2 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-2 focus:ring-gray-900 focus:outline-none">
         <option value="">All Types</option>
         <option value="stock_in" {% if filter_type == 'stock_in' %}selected{% endif %}>Stock In</option>
         <option value="stock_out" {% if filter_type == 'stock_out' %}selected{% endif %}>Stock Out</option>
@@ -31,41 +31,47 @@
 </div>
 
 {% if totals.total_sum %}
-<div class="alert alert-info py-2">Total: <strong>₱{{ totals.total_sum|floatformat:2 }}</strong></div>
+<div class="mb-4 px-4 py-2.5 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-700">
+    Total: <strong>₱{{ totals.total_sum|floatformat:2 }}</strong>
+</div>
 {% endif %}
 
-<div class="table-responsive">
-    <table class="table table-hover">
-        <thead class="table-dark">
+<div class="overflow-x-auto rounded-xl border border-gray-200">
+    <table class="w-full text-sm">
+        <thead class="bg-gray-100 text-gray-600 uppercase text-xs">
             <tr>
-                <th>Date</th>
-                <th>Type</th>
-                <th>Item</th>
-                <th>Qty</th>
-                <th>Total</th>
-                <th>Creditor</th>
-                <th></th>
+                <th class="text-left px-4 py-3">Date</th>
+                <th class="text-left px-4 py-3">Type</th>
+                <th class="text-left px-4 py-3">Item</th>
+                <th class="text-right px-4 py-3">Qty</th>
+                <th class="text-right px-4 py-3">Total</th>
+                <th class="text-left px-4 py-3">Creditor</th>
+                <th class="text-center px-4 py-3"></th>
             </tr>
         </thead>
-        <tbody>
+        <tbody class="divide-y divide-gray-100">
             {% for t in transactions %}
-            <tr>
-                <td>{{ t.created_at|date:"M d, H:i" }}</td>
-                <td>
-                    <span class="badge {% if t.transaction_type == 'stock_in' %}bg-success{% elif t.transaction_type == 'stock_out' %}bg-warning text-dark{% elif t.transaction_type == 'credit_sale' %}bg-info text-dark{% else %}bg-primary{% endif %}">
+            <tr class="hover:bg-gray-50">
+                <td class="px-4 py-2.5 whitespace-nowrap">{{ t.created_at|date:"M d, H:i" }}</td>
+                <td class="px-4 py-2.5">
+                    <span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium
+                        {% if t.transaction_type == 'stock_in' %}bg-green-100 text-green-700
+                        {% elif t.transaction_type == 'stock_out' %}bg-yellow-100 text-yellow-700
+                        {% elif t.transaction_type == 'credit_sale' %}bg-cyan-100 text-cyan-700
+                        {% else %}bg-blue-100 text-blue-700{% endif %}">
                         {{ t.get_transaction_type_display }}
                     </span>
                 </td>
-                <td>{{ t.item.name }}</td>
-                <td>{{ t.qty }}</td>
-                <td>₱{{ t.total|floatformat:2 }}</td>
-                <td>{% if t.creditor %}{{ t.creditor.name }}{% else %}—{% endif %}</td>
-                <td>
-                    <a href="{% url 'transactions:transaction_delete' t.pk %}" class="btn btn-sm btn-outline-danger py-0"><i class="bi bi-trash"></i></a>
+                <td class="px-4 py-2.5">{{ t.item.name }}</td>
+                <td class="px-4 py-2.5 text-right">{{ t.qty }}</td>
+                <td class="px-4 py-2.5 text-right font-medium">₱{{ t.total|floatformat:2 }}</td>
+                <td class="px-4 py-2.5">{{ t.creditor.name|default:"—" }}</td>
+                <td class="px-4 py-2.5 text-center">
+                    <a href="{% url 'transactions:transaction_delete' t.pk %}" class="text-red-500 hover:text-red-700"><i class="bi bi-trash"></i></a>
                 </td>
             </tr>
             {% empty %}
-            <tr><td colspan="7" class="text-center text-muted">No transactions.</td></tr>
+            <tr><td colspan="7" class="px-4 py-8 text-center text-gray-400">No transactions.</td></tr>
             {% endfor %}
         </tbody>
     </table>

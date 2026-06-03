@@ -1,19 +1,18 @@
 {% extends 'base.html' %}
 {% block title %}Delete Transaction{% endblock %}
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-4">
-        <div class="card border-danger">
-            <div class="card-header bg-danger text-white"><h5>Confirm Delete</h5></div>
-            <div class="card-body">
-                <p>Delete <strong>{{ transaction.get_transaction_type_display }}</strong> of <strong>{{ transaction.item.name }}</strong> x{{ transaction.qty }}?</p>
-                <form method="post">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">Delete</button>
-                    <a href="{% url 'transactions:transaction_list' %}" class="btn btn-secondary">Cancel</a>
-                </form>
+<div class="max-w-sm mx-auto mt-12">
+    <div class="bg-white rounded-xl border border-red-200 shadow-sm p-6 text-center">
+        <div class="text-red-500 text-4xl mb-3"><i class="bi bi-exclamation-triangle"></i></div>
+        <h3 class="font-semibold text-gray-900 mb-2">Delete Transaction?</h3>
+        <p class="text-sm text-gray-500 mb-4">{{ transaction.get_transaction_type_display }} of <strong>{{ transaction.item.name }}</strong> x{{ transaction.qty }}</p>
+        <form method="post">
+            {% csrf_token %}
+            <div class="flex gap-2 justify-center">
+                <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition">Delete</button>
+                <a href="{% url 'transactions:transaction_list' %}" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition">Cancel</a>
             </div>
-        </div>
+        </form>
     </div>
 </div>
 {% endblock %}
