@@ -56,13 +56,17 @@ def transaction_create(request):
     if request.method == 'POST':
         form = TransactionForm(request.POST)
         if form.is_valid():
-            transaction = form.save()
+            form.save()
             if request.headers.get('HX-Request'):
-                return redirect('transaction_list')
+                from django.http import HttpResponse
+                response = HttpResponse()
+                response['HX-Refresh'] = 'true'
+                return response
             return redirect('transaction_list')
     else:
         form = TransactionForm()
-    return render(request, 'transactions/transaction_form.html', {'form': form})
+    template = 'transactions/transaction_form_content.html' if request.headers.get('HX-Request') else 'transactions/transaction_form.html'
+    return render(request, template, {'form': form})
 
 
 @login_required

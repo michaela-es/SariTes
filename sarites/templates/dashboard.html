@@ -224,7 +224,7 @@
             </option>
             {% endfor %}
         </select>
-        <a href="{% url 'creditors:creditor_create' %}" class="px-3 py-1.5 bg-gray-900 text-white rounded-lg text-xs font-medium hover:bg-gray-800 transition"><i class="bi bi-plus-lg"></i> Add</a>
+        <button hx-get="{% url 'creditors:creditor_create' %}" hx-target="#formModalContent" onclick="openModal('formModal')" class="px-3 py-1.5 bg-gray-900 text-white rounded-lg text-xs font-medium hover:bg-gray-800 transition"><i class="bi bi-plus-lg"></i> Add</button>
     </div>
 
     {% if creditor_detail %}
@@ -255,7 +255,7 @@
                     <td class="px-4 py-2.5 text-right">{{ c.tx_count }}</td>
                     <td class="px-4 py-2.5 text-center">
                         <a href="?creditor={{ c.id }}" class="text-cyan-600 hover:text-cyan-800 mr-2"><i class="bi bi-eye"></i></a>
-                        <a href="{% url 'creditors:creditor_edit' c.pk %}" class="text-gray-600 hover:text-gray-800"><i class="bi bi-pencil"></i></a>
+                        <button hx-get="{% url 'creditors:creditor_edit' c.pk %}" hx-target="#formModalContent" onclick="openModal('formModal')" class="text-gray-600 hover:text-gray-800 bg-transparent border-0 cursor-pointer"><i class="bi bi-pencil"></i></button>
                     </td>
                 </tr>
                 {% empty %}
@@ -305,6 +305,10 @@
             </div>
         </form>
     </div>
+</div>
+
+<div id="formModal" class="fixed inset-0 z-50 hidden bg-black/40 items-center justify-center" onclick="if(event.target===this)closeModal('formModal')">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4 overflow-hidden" id="formModalContent" onclick="event.stopPropagation()"></div>
 </div>
 {% endblock %}
 

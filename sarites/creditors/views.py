@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from django.db.models import Q
 from .models import Creditor
 from .forms import CreditorForm
@@ -20,10 +21,15 @@ def creditor_create(request):
         form = CreditorForm(request.POST)
         if form.is_valid():
             form.save()
+            if request.headers.get('HX-Request'):
+                response = HttpResponse()
+                response['HX-Refresh'] = 'true'
+                return response
             return redirect('creditor_list')
     else:
         form = CreditorForm()
-    return render(request, 'creditors/creditor_form.html', {'form': form})
+    template = 'creditors/creditor_form_content.html' if request.headers.get('HX-Request') else 'creditors/creditor_form.html'
+    return render(request, template, {'form': form})
 
 
 @login_required
@@ -33,10 +39,15 @@ def creditor_edit(request, pk):
         form = CreditorForm(request.POST, instance=creditor)
         if form.is_valid():
             form.save()
+            if request.headers.get('HX-Request'):
+                response = HttpResponse()
+                response['HX-Refresh'] = 'true'
+                return response
             return redirect('creditor_list')
     else:
         form = CreditorForm(instance=creditor)
-    return render(request, 'creditors/creditor_form.html', {'form': form, 'creditor': creditor})
+    template = 'creditors/creditor_form_content.html' if request.headers.get('HX-Request') else 'creditors/creditor_form.html'
+    return render(request, template, {'form': form, 'creditor': creditor})
 
 
 @login_required

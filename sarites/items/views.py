@@ -26,11 +26,15 @@ def item_create(request):
         if form.is_valid():
             form.save()
             if request.headers.get('HX-Request'):
-                return redirect('item_list')
+                from django.http import HttpResponse
+                response = HttpResponse()
+                response['HX-Refresh'] = 'true'
+                return response
             return redirect('item_list')
     else:
         form = ItemForm()
-    return render(request, 'items/item_form.html', {'form': form})
+    template = 'items/item_form_content.html' if request.headers.get('HX-Request') else 'items/item_form.html'
+    return render(request, template, {'form': form})
 
 
 @login_required
@@ -40,10 +44,16 @@ def item_edit(request, pk):
         form = ItemForm(request.POST, instance=item)
         if form.is_valid():
             form.save()
+            if request.headers.get('HX-Request'):
+                from django.http import HttpResponse
+                response = HttpResponse()
+                response['HX-Refresh'] = 'true'
+                return response
             return redirect('item_list')
     else:
         form = ItemForm(instance=item)
-    return render(request, 'items/item_form.html', {'form': form, 'item': item})
+    template = 'items/item_form_content.html' if request.headers.get('HX-Request') else 'items/item_form.html'
+    return render(request, template, {'form': form, 'item': item})
 
 
 @login_required
