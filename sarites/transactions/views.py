@@ -2,7 +2,7 @@ import json
 from datetime import date, timedelta
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.db.models import Sum, Q
 from django.utils import timezone
 from .models import Transaction
@@ -58,7 +58,6 @@ def transaction_create(request):
         if form.is_valid():
             form.save()
             if request.headers.get('HX-Request'):
-                from django.http import HttpResponse
                 response = HttpResponse()
                 response['HX-Refresh'] = 'true'
                 return response
@@ -116,3 +115,18 @@ def transaction_delete(request, pk):
         transaction.delete()
         return redirect('transaction_list')
     return render(request, 'transactions/transaction_confirm_delete.html', {'transaction': transaction})
+
+
+@login_required
+def mark_paid(request, pk):
+    transaction = get_object_or_404(Transaction, pk=pk, transaction_type='credit_sale')
+    if request.method == 'POST':
+        transaction.transaction_type = 'sale'
+        transaction.save(update_fields=['transaction_type'])
+        if request.headers.get('HX-Request'):
+            from django.http import HttpResponse
+            response = HttpResponse()
+            response['HX-Refresh'] = 'true'
+            return response
+        return redirect('transaction_list')
+    return JsonResponse({'error': 'POST required'}, status=405)

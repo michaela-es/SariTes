@@ -41,8 +41,12 @@ def dashboard(request):
 
     selected_creditor = request.GET.get('creditor', '')
     creditor_detail = None
+    creditor_transactions = []
     if selected_creditor:
         creditor_detail = Creditor.objects.filter(id=selected_creditor).first()
+        creditor_transactions = Transaction.objects.filter(
+            creditor_id=selected_creditor
+        ).select_related('item').order_by('-created_at')
 
     return render(request, 'dashboard.html', {
         'recent': recent,
@@ -51,6 +55,7 @@ def dashboard(request):
         'items': items,
         'today_sales': today_sales,
         'creditor_detail': creditor_detail,
+        'creditor_transactions': creditor_transactions,
         'selected_creditor': selected_creditor,
         'date_filter': date_filter,
         'date_from': date_from,
