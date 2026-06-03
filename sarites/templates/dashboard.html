@@ -225,11 +225,14 @@
 <div class="tab-pane" id="tab-cred">
     <div class="flex items-center justify-between mb-4">
         <h3 class="font-semibold text-gray-800">Creditors</h3>
-        <button hx-get="{% url 'creditors:creditor_create' %}" hx-target="#formModalContent" onclick="openModal('formModal')" class="px-3 py-1.5 bg-gray-900 text-white rounded-lg text-xs font-medium hover:bg-gray-800 transition"><i class="bi bi-plus-lg"></i> Add</button>
+        <div class="flex items-center gap-2">
+            <input type="text" id="cred-search" class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-900 focus:outline-none w-48" placeholder="Search creditors...">
+            <button hx-get="{% url 'creditors:creditor_create' %}" hx-target="#formModalContent" onclick="openModal('formModal')" class="px-3 py-1.5 bg-gray-900 text-white rounded-lg text-xs font-medium hover:bg-gray-800 transition"><i class="bi bi-plus-lg"></i> Add</button>
+        </div>
     </div>
 
     <div class="overflow-x-auto rounded-xl border border-gray-200" style="max-height:55vh;overflow-y:auto">
-        <table class="w-full text-sm">
+        <table class="w-full text-sm" id="cred-table">
             <thead class="bg-gray-100 text-gray-600 uppercase text-xs sticky top-0">
                 <tr>
                     <th class="text-left px-4 py-3">Name</th>
@@ -241,7 +244,7 @@
             </thead>
             <tbody class="divide-y divide-gray-100">
                 {% for c in creditors %}
-                <tr class="hover:bg-gray-50 {% if selected_creditor|stringformat:'s' == c.id|stringformat:'s' %}bg-gray-50{% endif %}">
+                <tr class="cred-row hover:bg-gray-50" data-name="{{ c.name|lower }}">
                     <td class="px-4 py-2.5 font-medium">{{ c.name }}</td>
                     <td class="px-4 py-2.5">{{ c.contact_info|default:"—" }}</td>
                     <td class="px-4 py-2.5 text-right font-medium">₱{{ c.total_balance|floatformat:2 }}</td>
@@ -454,6 +457,14 @@ function filterItems() {
 }
 document.getElementById('items-search')?.addEventListener('input', filterItems);
 document.getElementById('items-stock-filter')?.addEventListener('change', filterItems);
+
+// ── CREDITOR SEARCH ──
+document.getElementById('cred-search')?.addEventListener('input', function() {
+    const q = this.value.toLowerCase();
+    document.querySelectorAll('.cred-row').forEach(row => {
+        row.style.display = row.dataset.name.includes(q) ? '' : 'none';
+    });
+});
 
 // ── CHARTS ──
 let salesChart, typeChart, topItemsChart, creditorChart;

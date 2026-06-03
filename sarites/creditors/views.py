@@ -9,11 +9,7 @@ from transactions.models import Transaction
 
 @login_required
 def creditor_list(request):
-    q = request.GET.get('q', '')
-    creditors = Creditor.objects.all()
-    if q:
-        creditors = creditors.filter(Q(name__icontains=q) | Q(contact_info__icontains=q))
-    return render(request, 'creditors/creditor_list.html', {'creditors': creditors, 'query': q})
+    return redirect('dashboard')
 
 
 @login_required
@@ -26,7 +22,7 @@ def creditor_create(request):
                 response = HttpResponse()
                 response['HX-Refresh'] = 'true'
                 return response
-            return redirect('creditor_list')
+            return redirect('dashboard')
     else:
         form = CreditorForm()
     template = 'creditors/creditor_form_content.html' if request.headers.get('HX-Request') else 'creditors/creditor_form.html'
@@ -44,7 +40,7 @@ def creditor_edit(request, pk):
                 response = HttpResponse()
                 response['HX-Refresh'] = 'true'
                 return response
-            return redirect('creditor_list')
+            return redirect('dashboard')
     else:
         form = CreditorForm(instance=creditor)
     template = 'creditors/creditor_form_content.html' if request.headers.get('HX-Request') else 'creditors/creditor_form.html'
@@ -56,7 +52,7 @@ def creditor_delete(request, pk):
     creditor = get_object_or_404(Creditor, pk=pk)
     if request.method == 'POST':
         creditor.delete()
-        return redirect('creditor_list')
+        return redirect('dashboard')
     return render(request, 'creditors/creditor_confirm_delete.html', {'creditor': creditor})
 
 
