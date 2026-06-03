@@ -339,7 +339,7 @@ function quickSale() {
         const typeLabels = {stock_in: 'Stock In', stock_out: 'Stock Out', sale: 'Sale', credit_sale: 'Credit'};
         const tl = typeLabels[data.type] || data.type;
         document.getElementById('nlp-preview').innerHTML = `<span class="text-green-700 font-semibold">✓ ${tl}: ${data.qty}x ${data.item} — ₱${data.total.toFixed(2)}</span>`;
-        refreshSections(['stats', 'recent']);
+        refreshSections(['stats', 'recent', 'items', 'creditors', 'txns']);
     });
 }
 
@@ -413,6 +413,7 @@ function refreshSections(sections) {
                 const el = document.getElementById(id);
                 if (el) el.innerHTML = html[id];
             });
+            if (html['items-table']) filterItems();
         });
 }
 
