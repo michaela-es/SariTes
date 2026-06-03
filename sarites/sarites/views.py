@@ -3,6 +3,7 @@ from datetime import date, timedelta, datetime
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum, Count, Q
+from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.utils import timezone
 from transactions.models import Transaction
@@ -88,3 +89,42 @@ def analytics_data(request):
         'top_items': top_items,
         'creditor_balances': creditor_balances,
     })
+
+
+@login_required
+def dashboard_partials(request):
+    today = timezone.now().date()
+    sections = request.GET.getlist('sections')
+    if not sections:
+        sections = request.GET.get('sections', '').split(',') if request.GET.get('sections') else []
+
+    context = {
+        'recent': Transaction.objects.select_related('item', 'creditor').all()[:10],
+        'items': Item.objects.annotate(tx_count=Count('transactions')).all(),
+        'creditors': Creditor.objects.annotate(tx_count=Count('transactions')).all(),
+        'today_sales': Transaction.objects.filter(
+            transaction_type='sale', created_at__date=today,
+        ).aggregate(total=Sum('total'))['total'] or 0,
+    }
+
+    html = {}
+    for s in sections:
+        s = s.strip()
+        if s == 'stats':
+            html['stats-cards'] = render_to_string('partials/_stats_cards.html', context, request=request)
+        elif s == 'recent':
+            html['recent-txns'] = render_to_string('partials/_transaction_table.html', {
+                **context,
+                'title': '<i class="bi bi-clock-history"></i> Recent Transactions',
+                'transactions': context['recent'],
+                'show_creditor': True,
+                'show_actions': False,
+                'show_status': False,
+                'empty_message': 'No transactions yet. Try a quick entry above!',
+            }, request=request)
+        elif s == 'items':
+            html['items-table'] = render_to_string('partials/_items_table.html', context, request=request)
+        elif s == 'creditors':
+            html['creditors-table'] = render_to_string('partials/_creditors_table.html', context, request=request)
+
+    return JsonResponse(html)

@@ -9,6 +9,7 @@
 .tab-pane.active{ display: block; }
 .nlp-preview{ min-height: 2.5rem; }
 </style>
+<script>document.addEventListener('DOMContentLoaded', () => document.body.classList.add('dashboard-page'));</script>
 {% endblock %}
 
 {% block content %}
@@ -46,24 +47,10 @@
             </div>
             <div id="nlp-preview" class="nlp-preview mt-2 px-3 py-2 rounded-lg bg-gray-50 border border-gray-200 text-sm"></div>
         </div>
-        <div class="grid grid-cols-2 gap-3 content-start">
-            <div class="bg-white rounded-xl border border-gray-200 p-4 text-center shadow-sm">
-                <p class="text-xs text-gray-500 uppercase tracking-wide">Items</p>
-                <p class="text-2xl font-bold text-gray-900 mt-1">{{ items|length }}</p>
-            </div>
-            <div class="bg-white rounded-xl border border-gray-200 p-4 text-center shadow-sm">
-                <p class="text-xs text-gray-500 uppercase tracking-wide">Today Sales</p>
-                <p class="text-2xl font-bold text-green-600 mt-1">₱{{ today_sales|floatformat:0 }}</p>
-            </div>
-            <div class="col-span-2">
-                <button onclick="openModal('excelModal')" class="w-full py-2.5 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition text-sm flex items-center justify-center gap-2">
-                    <i class="bi bi-file-earmark-excel"></i> Upload Excel
-                </button>
-            </div>
-        </div>
+        <div id="stats-cards">{% include 'partials/_stats_cards.html' %}</div>
     </div>
 
-    {% include 'partials/_transaction_table.html' with title='<i class="bi bi-clock-history"></i> Recent Transactions' transactions=recent show_creditor=True show_actions=False show_status=False empty_message="No transactions yet. Try a quick entry above!" %}
+    <div id="recent-txns">{% include 'partials/_transaction_table.html' with title='<i class="bi bi-clock-history"></i> Recent Transactions' transactions=recent show_creditor=True show_actions=False show_status=False empty_message="No transactions yet. Try a quick entry above!" %}</div>
 </div>
 
 {# ── TAB 2: ITEMS OVERVIEW ── #}
@@ -85,39 +72,7 @@
             <option value="high">High (31+)</option>
         </select>
     </div>
-    <div class="overflow-x-auto rounded-xl border border-gray-200" style="max-height:55vh;overflow-y:auto">
-        <table class="w-full text-xs sm:text-sm">
-            <thead class="bg-gray-100 text-gray-600 uppercase text-[10px] sm:text-xs sticky top-0">
-                <tr>
-                    <th class="text-left px-2 sm:px-4 py-2 sm:py-3">Name</th>
-                    <th class="text-right px-2 sm:px-4 py-2 sm:py-3">Price</th>
-                    <th class="text-right px-2 sm:px-4 py-2 sm:py-3">Stock</th>
-                    <th class="hidden sm:table-cell text-right px-2 sm:px-4 py-2 sm:py-3">Txns</th>
-                    <th class="text-left px-2 sm:px-4 py-2 sm:py-3">Status</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100">
-                {% for item in items %}
-                <tr class="item-row hover:bg-gray-50" data-name="{{ item.name|lower }}" data-stock="{{ item.qty }}">
-                    <td class="px-2 sm:px-4 py-1.5 sm:py-2.5 font-medium truncate max-w-[100px] sm:max-w-none">{{ item.name }}</td>
-                    <td class="px-2 sm:px-4 py-1.5 sm:py-2.5 text-right whitespace-nowrap">₱{{ item.price }}</td>
-                    <td class="px-2 sm:px-4 py-1.5 sm:py-2.5 text-right">{{ item.qty }}</td>
-                    <td class="hidden sm:table-cell px-2 sm:px-4 py-1.5 sm:py-2.5 text-right">{{ item.tx_count }}</td>
-                    <td class="px-2 sm:px-4 py-1.5 sm:py-2.5">
-                        <span class="inline-block px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-medium
-                            {% if item.qty == 0 %}bg-red-100 text-red-700
-                            {% elif item.qty <= 10 %}bg-yellow-100 text-yellow-700
-                            {% else %}bg-green-100 text-green-700{% endif %}">
-                            {% if item.qty == 0 %}Out of Stock{% elif item.qty <= 10 %}Low Stock{% else %}In Stock{% endif %}
-                        </span>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr><td colspan="5" class="px-2 sm:px-4 py-6 sm:py-8 text-center text-gray-400">No items yet.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    <div id="items-table">{% include 'partials/_items_table.html' %}</div>
 </div>
 
 {# ── TAB 3: TRANSACTIONS ── #}
@@ -135,7 +90,7 @@
             {% if date_filter or date_from %}<a href="/#txns" class="px-3 py-1.5 bg-red-500 text-white rounded-lg text-xs font-medium hover:bg-red-600 transition"><i class="bi bi-x"></i></a>{% endif %}
         </form>
     </div>
-    {% include 'partials/_transaction_table.html' with transactions=transactions show_creditor=True show_actions=True show_status=False empty_message="No transactions in this period." max_height="60vh" %}
+    <div id="txns-table">{% include 'partials/_transaction_table.html' with transactions=transactions show_creditor=True show_actions=True show_status=False empty_message="No transactions in this period." max_height="60vh" %}</div>
 </div>
 
 {# ── TAB 4: CREDITORS ── #}
@@ -148,35 +103,7 @@
         </div>
     </div>
 
-    <div class="overflow-x-auto rounded-xl border border-gray-200" style="max-height:55vh;overflow-y:auto">
-        <table class="w-full text-xs sm:text-sm" id="cred-table">
-            <thead class="bg-gray-100 text-gray-600 uppercase text-[10px] sm:text-xs sticky top-0">
-                <tr>
-                    <th class="text-left px-2 sm:px-4 py-2 sm:py-3">Name</th>
-                    <th class="hidden sm:table-cell text-left px-2 sm:px-4 py-2 sm:py-3">Contact</th>
-                    <th class="text-right px-2 sm:px-4 py-2 sm:py-3">Balance</th>
-                    <th class="hidden sm:table-cell text-right px-2 sm:px-4 py-2 sm:py-3">Txns</th>
-                    <th class="text-center px-2 sm:px-4 py-2 sm:py-3 w-12 sm:w-16"></th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100">
-                {% for c in creditors %}
-                <tr class="cred-row hover:bg-gray-50" data-name="{{ c.name|lower }}">
-                    <td class="px-2 sm:px-4 py-1.5 sm:py-2.5 font-medium truncate max-w-[100px] sm:max-w-none">{{ c.name }}</td>
-                    <td class="hidden sm:table-cell px-2 sm:px-4 py-1.5 sm:py-2.5 truncate max-w-[120px]">{{ c.contact_info|default:"—" }}</td>
-                    <td class="px-2 sm:px-4 py-1.5 sm:py-2.5 text-right font-medium whitespace-nowrap">₱{{ c.total_balance|floatformat:2 }}</td>
-                    <td class="hidden sm:table-cell px-2 sm:px-4 py-1.5 sm:py-2.5 text-right">{{ c.tx_count }}</td>
-                    <td class="px-2 sm:px-4 py-1.5 sm:py-2.5 text-center whitespace-nowrap">
-                        <a href="{% url 'creditors:creditor_detail' c.id %}" class="text-cyan-600 hover:text-cyan-800 mr-1 sm:mr-2"><i class="bi bi-eye text-xs sm:text-sm"></i></a>
-                        <button hx-get="{% url 'creditors:creditor_edit' c.pk %}" hx-target="#formModalContent" onclick="openModal('formModal')" class="text-gray-600 hover:text-gray-800 bg-transparent border-0 cursor-pointer"><i class="bi bi-pencil text-xs sm:text-sm"></i></button>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr><td colspan="5" class="px-2 sm:px-4 py-6 sm:py-8 text-center text-gray-400">No creditors yet.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    <div id="creditors-table">{% include 'partials/_creditors_table.html' %}</div>
 </div>
 
 {# ── TAB 5: ANALYTICS ── #}
@@ -409,7 +336,7 @@ function quickSale() {
         const typeLabels = {stock_in: 'Stock In', stock_out: 'Stock Out', sale: 'Sale', credit_sale: 'Credit'};
         const tl = typeLabels[data.type] || data.type;
         document.getElementById('nlp-preview').innerHTML = `<span class="text-green-700 font-semibold">✓ ${tl}: ${data.qty}x ${data.item} — ₱${data.total.toFixed(2)}</span>`;
-        setTimeout(() => location.reload(), 600);
+        refreshSections(['stats', 'recent']);
     });
 }
 
@@ -427,7 +354,7 @@ document.getElementById('excel-form')?.addEventListener('submit', function(e) {
         const el = document.getElementById('excel-result');
         if (d.error) { el.innerHTML = `<span class="text-red-500">${d.error}</span>`; return; }
         el.innerHTML = `<span class="text-green-700">Created: ${d.created}, Updated: ${d.updated}</span>`;
-        setTimeout(() => location.reload(), 1000);
+        refreshSections(['stats', 'recent', 'items', 'creditors']);
     });
 });
 
@@ -460,6 +387,22 @@ document.getElementById('cred-search')?.addEventListener('input', function() {
     document.querySelectorAll('.cred-row').forEach(row => {
         row.style.display = row.dataset.name.includes(q) ? '' : 'none';
     });
+});
+
+// ── SPA PARTIAL REFRESH ──
+function refreshSections(sections) {
+    fetch('/dashboard-partials/?sections=' + sections.join(','))
+        .then(r => r.json())
+        .then(html => {
+            Object.keys(html).forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = html[id];
+            });
+        });
+}
+
+document.addEventListener('dashboard-updated', () => {
+    refreshSections(['stats', 'recent', 'items', 'creditors']);
 });
 
 // ── CHARTS ──

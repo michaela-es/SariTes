@@ -1,0 +1,29 @@
+<div class="overflow-x-auto rounded-xl border border-gray-200" style="max-height:55vh;overflow-y:auto">
+    <table class="w-full text-xs sm:text-sm" id="cred-table">
+        <thead class="bg-gray-100 text-gray-600 uppercase text-[10px] sm:text-xs sticky top-0">
+            <tr>
+                <th class="text-left px-2 sm:px-4 py-2 sm:py-3">Name</th>
+                <th class="hidden sm:table-cell text-left px-2 sm:px-4 py-2 sm:py-3">Contact</th>
+                <th class="text-right px-2 sm:px-4 py-2 sm:py-3">Balance</th>
+                <th class="hidden sm:table-cell text-right px-2 sm:px-4 py-2 sm:py-3">Txns</th>
+                <th class="text-center px-2 sm:px-4 py-2 sm:py-3 w-12 sm:w-16"></th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+            {% for c in creditors %}
+            <tr class="cred-row hover:bg-gray-50" data-name="{{ c.name|lower }}">
+                <td class="px-2 sm:px-4 py-1.5 sm:py-2.5 font-medium truncate max-w-[100px] sm:max-w-none">{{ c.name }}</td>
+                <td class="hidden sm:table-cell px-2 sm:px-4 py-1.5 sm:py-2.5 truncate max-w-[120px]">{{ c.contact_info|default:"—" }}</td>
+                <td class="px-2 sm:px-4 py-1.5 sm:py-2.5 text-right font-medium whitespace-nowrap">₱{{ c.total_balance|floatformat:2 }}</td>
+                <td class="hidden sm:table-cell px-2 sm:px-4 py-1.5 sm:py-2.5 text-right">{{ c.tx_count }}</td>
+                <td class="px-2 sm:px-4 py-1.5 sm:py-2.5 text-center whitespace-nowrap">
+                    <a href="{% url 'creditors:creditor_detail' c.id %}" class="text-cyan-600 hover:text-cyan-800 mr-1 sm:mr-2"><i class="bi bi-eye text-xs sm:text-sm"></i></a>
+                    <button hx-get="{% url 'creditors:creditor_edit' c.pk %}" hx-target="#formModalContent" onclick="openModal('formModal')" class="text-gray-600 hover:text-gray-800 bg-transparent border-0 cursor-pointer"><i class="bi bi-pencil text-xs sm:text-sm"></i></button>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="px-2 sm:px-4 py-6 sm:py-8 text-center text-gray-400">No creditors yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

@@ -45,6 +45,11 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <script>
+    document.addEventListener('dashboard-updated', () => {
+        if (!document.body.classList.contains('dashboard-page')) location.reload();
+    });
+    </script>
     {% block extra_scripts %}{% endblock %}
 </body>
 </html>

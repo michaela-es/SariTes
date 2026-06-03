@@ -59,7 +59,7 @@ def transaction_create(request):
             form.save()
             if request.headers.get('HX-Request'):
                 response = HttpResponse()
-                response['HX-Refresh'] = 'true'
+                response['HX-Trigger'] = 'dashboard-updated'
                 return response
             return redirect('transaction_list')
     else:
@@ -117,7 +117,7 @@ def transaction_delete(request, pk):
         transaction.delete()
         if request.headers.get('HX-Request'):
             response = HttpResponse()
-            response['HX-Refresh'] = 'true'
+            response['HX-Trigger'] = 'dashboard-updated'
             return response
         return redirect('transaction_list')
     if request.headers.get('HX-Request'):
@@ -133,7 +133,7 @@ def mark_paid(request, pk):
         transaction.save(update_fields=['transaction_type'])
         if request.headers.get('HX-Request'):
             response = HttpResponse()
-            response['HX-Refresh'] = 'true'
+            response['HX-Trigger'] = 'dashboard-updated'
             return response
         return redirect(request.META.get('HTTP_REFERER', '/'))
     return redirect(request.META.get('HTTP_REFERER', '/'))
@@ -147,7 +147,7 @@ def mark_all_paid(request, creditor_id):
         ).update(transaction_type='sale')
         if request.headers.get('HX-Request'):
             response = HttpResponse()
-            response['HX-Refresh'] = 'true'
+            response['HX-Trigger'] = 'dashboard-updated'
             return response
         return redirect(request.META.get('HTTP_REFERER', '/'))
     return redirect(request.META.get('HTTP_REFERER', '/'))
