@@ -223,83 +223,12 @@
 
 {# ── TAB 4: CREDITORS ── #}
 <div class="tab-pane" id="tab-cred">
-    <div class="flex flex-wrap items-center gap-3 mb-4">
-        <select id="creditorSelect" onchange="window.location='?creditor='+this.value" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-900 focus:outline-none">
-            <option value="">All Creditors</option>
-            {% for c in creditors %}
-            <option value="{{ c.id }}" {% if selected_creditor|stringformat:'s' == c.id|stringformat:'s' %}selected{% endif %}>
-                {{ c.name }} (₱{{ c.total_balance|floatformat:0 }})
-            </option>
-            {% endfor %}
-        </select>
+    <div class="flex items-center justify-between mb-4">
+        <h3 class="font-semibold text-gray-800">Creditors</h3>
         <button hx-get="{% url 'creditors:creditor_create' %}" hx-target="#formModalContent" onclick="openModal('formModal')" class="px-3 py-1.5 bg-gray-900 text-white rounded-lg text-xs font-medium hover:bg-gray-800 transition"><i class="bi bi-plus-lg"></i> Add</button>
     </div>
 
-    {% if creditor_detail %}
-    <div class="mb-4 p-4 rounded-xl border border-cyan-200 bg-cyan-50 flex items-start justify-between">
-        <div>
-            <h4 class="font-semibold text-gray-900">{{ creditor_detail.name }}</h4>
-            <p class="text-sm text-gray-600 mt-0.5">Contact: {{ creditor_detail.contact_info|default:"—" }}</p>
-            <p class="text-sm mt-0.5">Total Debt: <strong class="text-red-600">₱{{ creditor_detail.total_balance|floatformat:2 }}</strong></p>
-        </div>
-        <form method="post" action="{% url 'transactions:mark_all_paid' creditor_detail.id %}">
-            {% csrf_token %}
-            <button type="submit" class="px-3 py-1.5 bg-green-600 text-white rounded-lg text-xs font-medium hover:bg-green-700 transition flex items-center gap-1">
-                <i class="bi bi-check-all"></i> Mark All Paid
-            </button>
-        </form>
-    </div>
-
-    {% if creditor_transactions %}
-    <div class="mb-4 overflow-x-auto rounded-xl border border-gray-200">
-        <table class="w-full text-sm">
-            <thead class="bg-gray-100 text-gray-600 uppercase text-xs sticky top-0">
-                <tr>
-                    <th class="text-left px-4 py-3">Date</th>
-                    <th class="text-left px-4 py-3">Item</th>
-                    <th class="text-right px-4 py-3">Qty</th>
-                    <th class="text-right px-4 py-3">Total</th>
-                    <th class="text-left px-4 py-3">Status</th>
-                    <th class="text-center px-4 py-3"></th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100">
-                {% for t in creditor_transactions %}
-                <tr class="hover:bg-gray-50">
-                    <td class="px-4 py-2 whitespace-nowrap">{{ t.created_at|date:"M d, H:i" }}</td>
-                    <td class="px-4 py-2">{{ t.item.name }}</td>
-                    <td class="px-4 py-2 text-right">{{ t.qty }}</td>
-                    <td class="px-4 py-2 text-right font-medium">₱{{ t.total|floatformat:2 }}</td>
-                    <td class="px-4 py-2">
-                        {% if t.transaction_type == 'credit_sale' %}
-                        <span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">Unpaid</span>
-                        {% else %}
-                        <span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">Paid</span>
-                        {% endif %}
-                    </td>
-                    <td class="px-4 py-2 text-center">
-                        {% if t.transaction_type == 'credit_sale' %}
-                        <form method="post" action="{% url 'transactions:mark_paid' t.pk %}" class="inline">
-                            {% csrf_token %}
-                            <button type="submit" class="text-xs px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition font-medium">
-                                <i class="bi bi-check-lg"></i> Mark Paid
-                            </button>
-                        </form>
-                        {% else %}
-                        <span class="text-xs text-gray-400">—</span>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    {% else %}
-    <p class="text-sm text-gray-400 mb-4">No transactions for this creditor.</p>
-    {% endif %}
-    {% endif %}
-
-    <div class="overflow-x-auto rounded-xl border border-gray-200" style="max-height:50vh;overflow-y:auto">
+    <div class="overflow-x-auto rounded-xl border border-gray-200" style="max-height:55vh;overflow-y:auto">
         <table class="w-full text-sm">
             <thead class="bg-gray-100 text-gray-600 uppercase text-xs sticky top-0">
                 <tr>
