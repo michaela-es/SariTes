@@ -94,9 +94,9 @@ def analytics_data(request):
 @login_required
 def dashboard_partials(request):
     today = timezone.now().date()
-    sections = request.GET.getlist('sections')
-    if not sections:
-        sections = request.GET.get('sections', '').split(',') if request.GET.get('sections') else []
+    sections = []
+    for s in request.GET.getlist('sections'):
+        sections.extend([x.strip() for x in s.split(',') if x.strip()])
 
     context = {
         'recent': Transaction.objects.select_related('item', 'creditor').all()[:10],
