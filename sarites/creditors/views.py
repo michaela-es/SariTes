@@ -59,7 +59,7 @@ def creditor_delete(request, pk):
 @login_required
 def creditor_detail(request, pk):
     creditor = get_object_or_404(Creditor, pk=pk)
-    transactions = Transaction.objects.filter(creditor=creditor).select_related('item').order_by('-created_at')
+    transactions = Transaction.objects.filter(creditor=creditor, transaction_type='credit_sale').select_related('item').order_by('-created_at')
     return render(request, 'creditors/creditor_detail.html', {
         'creditor': creditor,
         'transactions': transactions,

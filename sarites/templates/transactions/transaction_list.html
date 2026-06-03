@@ -36,49 +36,7 @@
 </div>
 {% endif %}
 
-<div class="overflow-x-auto rounded-xl border border-gray-200">
-    <table class="w-full text-sm">
-        <thead class="bg-gray-100 text-gray-600 uppercase text-xs">
-            <tr>
-                <th class="text-left px-4 py-3">Date</th>
-                <th class="text-left px-4 py-3">Type</th>
-                <th class="text-left px-4 py-3">Item</th>
-                <th class="text-right px-4 py-3">Qty</th>
-                <th class="text-right px-4 py-3">Total</th>
-                <th class="text-left px-4 py-3">Creditor</th>
-                <th class="text-center px-4 py-3"></th>
-            </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-100">
-            {% for t in transactions %}
-            <tr class="hover:bg-gray-50">
-                <td class="px-4 py-2.5 whitespace-nowrap">{{ t.created_at|date:"M d, H:i" }}</td>
-                <td class="px-4 py-2.5">
-                    <span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium
-                        {% if t.transaction_type == 'stock_in' %}bg-green-100 text-green-700
-                        {% elif t.transaction_type == 'stock_out' %}bg-yellow-100 text-yellow-700
-                        {% elif t.transaction_type == 'credit_sale' %}bg-cyan-100 text-cyan-700
-                        {% else %}bg-blue-100 text-blue-700{% endif %}">
-                        {{ t.get_transaction_type_display }}
-                    </span>
-                </td>
-                <td class="px-4 py-2.5">{{ t.item.name }}</td>
-                <td class="px-4 py-2.5 text-right">{{ t.qty }}</td>
-                <td class="px-4 py-2.5 text-right font-medium">₱{{ t.total|floatformat:2 }}</td>
-                <td class="px-4 py-2.5">{{ t.creditor.name|default:"—" }}</td>
-                <td class="px-4 py-2.5 text-center whitespace-nowrap">
-                    {% if t.transaction_type == 'credit_sale' %}
-                    {% include 'transactions/_mark_paid.html' with transaction=t %}
-                    {% endif %}
-                    <a href="{% url 'transactions:transaction_delete' t.pk %}" class="text-red-500 hover:text-red-700"><i class="bi bi-trash"></i></a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="7" class="px-4 py-8 text-center text-gray-400">No transactions.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+{% include 'partials/_transaction_table.html' with transactions=transactions show_creditor=True show_actions=True show_status=False empty_message="No transactions." %}
 
 <div id="formModal" class="fixed inset-0 z-50 hidden bg-black/40 items-center justify-center" onclick="if(event.target===this)closeModal('formModal')">
     <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4 overflow-hidden" id="formModalContent" onclick="event.stopPropagation()"></div>
