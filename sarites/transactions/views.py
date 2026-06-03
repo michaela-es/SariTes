@@ -127,7 +127,7 @@ def mark_paid(request, pk):
             response = HttpResponse()
             response['HX-Refresh'] = 'true'
             return response
-        return redirect('transaction_list')
+        return redirect(request.META.get('HTTP_REFERER', '/'))
     return JsonResponse({'error': 'POST required'}, status=405)
 
 
