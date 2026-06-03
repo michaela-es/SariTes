@@ -123,16 +123,16 @@
 {# ── TAB 3: TRANSACTIONS ── #}
 <div class="tab-pane" id="tab-txns">
     <div class="flex flex-wrap items-center gap-2 mb-4">
-        <a href="?date=today" class="px-3 py-1.5 rounded-lg text-xs font-medium border transition {% if date_filter == 'today' %}bg-gray-900 text-white border-gray-900{% else %}bg-white text-gray-600 border-gray-300 hover:bg-gray-100{% endif %}">Today</a>
-        <a href="?date=week" class="px-3 py-1.5 rounded-lg text-xs font-medium border transition {% if date_filter == 'week' %}bg-gray-900 text-white border-gray-900{% else %}bg-white text-gray-600 border-gray-300 hover:bg-gray-100{% endif %}">This Week</a>
-        <a href="?date=month" class="px-3 py-1.5 rounded-lg text-xs font-medium border transition {% if date_filter == 'month' %}bg-gray-900 text-white border-gray-900{% else %}bg-white text-gray-600 border-gray-300 hover:bg-gray-100{% endif %}">This Month</a>
+        <a href="?date=today#txns" class="px-3 py-1.5 rounded-lg text-xs font-medium border transition {% if date_filter == 'today' %}bg-gray-900 text-white border-gray-900{% else %}bg-white text-gray-600 border-gray-300 hover:bg-gray-100{% endif %}">Today</a>
+        <a href="?date=week#txns" class="px-3 py-1.5 rounded-lg text-xs font-medium border transition {% if date_filter == 'week' %}bg-gray-900 text-white border-gray-900{% else %}bg-white text-gray-600 border-gray-300 hover:bg-gray-100{% endif %}">This Week</a>
+        <a href="?date=month#txns" class="px-3 py-1.5 rounded-lg text-xs font-medium border transition {% if date_filter == 'month' %}bg-gray-900 text-white border-gray-900{% else %}bg-white text-gray-600 border-gray-300 hover:bg-gray-100{% endif %}">This Month</a>
         <span class="w-px h-6 bg-gray-300"></span>
-        <form method="get" class="flex items-center gap-1">
+        <form method="get" action="/#txns" class="flex items-center gap-1">
             <input type="date" name="from" value="{{ date_from }}" class="px-2 py-1.5 border border-gray-300 rounded-lg text-xs w-32 focus:ring-2 focus:ring-gray-900 focus:outline-none">
             <span class="text-gray-400">—</span>
             <input type="date" name="to" value="{{ date_to }}" class="px-2 py-1.5 border border-gray-300 rounded-lg text-xs w-32 focus:ring-2 focus:ring-gray-900 focus:outline-none">
             <button class="px-3 py-1.5 bg-gray-900 text-white rounded-lg text-xs font-medium hover:bg-gray-800 transition"><i class="bi bi-funnel"></i></button>
-            {% if date_filter or date_from %}<a href="/" class="px-3 py-1.5 bg-red-500 text-white rounded-lg text-xs font-medium hover:bg-red-600 transition"><i class="bi bi-x"></i></a>{% endif %}
+            {% if date_filter or date_from %}<a href="/#txns" class="px-3 py-1.5 bg-red-500 text-white rounded-lg text-xs font-medium hover:bg-red-600 transition"><i class="bi bi-x"></i></a>{% endif %}
         </form>
     </div>
     {% include 'partials/_transaction_table.html' with transactions=transactions show_creditor=True show_actions=True show_status=False empty_message="No transactions in this period." max_height="60vh" %}
