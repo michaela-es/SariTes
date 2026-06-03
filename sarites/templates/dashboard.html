@@ -334,7 +334,8 @@ const suggestDropdown = document.getElementById('suggest-dropdown');
 
 function getSearchTerm(val) {
     const m = val.match(/^[+-]?\d+\s+(.+)/);
-    return m ? m[1].trim() : '';
+    if (m) return m[1].trim();
+    return val.replace(/^[+-]/, '').trim();
 }
 
 if (nlpInput) {
@@ -356,8 +357,8 @@ if (nlpInput) {
                             div.className = 'px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm flex justify-between';
                             div.innerHTML = `<span>${item.name}</span><span class="text-gray-400">₱${item.price} · stock: ${item.qty}</span>`;
                             div.addEventListener('click', () => {
-                                const prefix = val.match(/^[+-]?\d+\s+/);
-                                nlpInput.value = (prefix ? prefix[0] : '') + item.name;
+                                const full = val.match(/^([+-]?\d+\s+).*/);
+                                nlpInput.value = (full ? full[1] : '') + item.name;
                                 suggestDropdown.classList.add('hidden');
                                 nlpInput.dispatchEvent(new Event('input'));
                                 nlpInput.focus();
