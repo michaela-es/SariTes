@@ -38,7 +38,7 @@ def dashboard(request):
         created_at__date=today,
     ).aggregate(total=Sum('total'))['total'] or 0
 
-    return render(request, 'dashboard.html', {
+    context = {
         'recent': recent,
         'transactions': txs,
         'creditors': creditors,
@@ -47,7 +47,10 @@ def dashboard(request):
         'date_filter': date_filter,
         'date_from': date_from,
         'date_to': date_to,
-    })
+    }
+    if request.headers.get('HX-Request'):
+        return render(request, 'partials/_txns_tab_content.html', context)
+    return render(request, 'dashboard.html', context)
 
 
 def analytics_data(request):

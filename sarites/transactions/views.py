@@ -38,7 +38,7 @@ def transaction_list(request):
     if q:
         transactions = transactions.filter(Q(item__name__icontains=q) | Q(notes__icontains=q))
     totals = transactions.aggregate(total_sum=Sum('total'))
-    return render(request, 'transactions/transaction_list.html', {
+    context = {
         'transactions': transactions,
         'totals': totals,
         'filter_type': ttype,
@@ -46,7 +46,10 @@ def transaction_list(request):
         'date_filter': date_filter,
         'date_from': date_from,
         'date_to': date_to,
-    })
+    }
+    if request.headers.get('HX-Request'):
+        return render(request, 'transactions/partials/_transaction_list_content.html', context)
+    return render(request, 'transactions/transaction_list.html', context)
 
 
 def transaction_create(request):
@@ -124,8 +127,10 @@ def transaction_delete(request, pk):
     if request.method == 'POST':
         transaction.delete()
         if request.headers.get('HX-Request'):
+            current_url = request.headers.get('HX-Current-URL', '/transactions/')
             response = HttpResponse()
-            response['HX-Trigger'] = 'dashboard-updated'
+            response['HX-Location'] = current_url
+            response['HX-Trigger'] = 'close-modal'
             return response
         return redirect('transaction_list')
     if request.headers.get('HX-Request'):

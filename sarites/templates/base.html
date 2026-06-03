@@ -63,6 +63,7 @@
     document.addEventListener('dashboard-updated', function() {
         if (!document.body.classList.contains('dashboard-page')) location.reload();
     });
+    document.addEventListener('close-modal', function() { closeModal('formModal'); });
     </script>
     {% block extra_scripts %}{% endblock %}
 </body>

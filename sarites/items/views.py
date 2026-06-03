@@ -1,7 +1,9 @@
 import json
+from urllib.parse import urlparse
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse
-from django.db.models import Q
+from django.http import HttpResponse, JsonResponse
+from django.db.models import Q, Count
+from django.template.loader import render_to_string
 from .models import Item
 from .forms import ItemForm
 from .utils import import_items_from_excel, parse_nlp_input
@@ -57,8 +59,18 @@ def item_delete(request, pk):
     if request.method == 'POST':
         item.delete()
         if request.headers.get('HX-Request'):
-            response = HttpResponse()
-            response['HX-Trigger'] = 'dashboard-updated'
+            current_url = request.headers.get('HX-Current-URL', '/')
+            path = urlparse(current_url).path
+            if path.startswith('/items/'):
+                response = HttpResponse()
+                response['HX-Location'] = current_url
+                response['HX-Trigger'] = 'close-modal'
+                return response
+            items = Item.objects.annotate(tx_count=Count('transactions')).all()
+            html = render_to_string('partials/_items_table.html', {'items': items}, request=request)
+            response = HttpResponse(html)
+            response['HX-Retarget'] = '#items-table'
+            response['HX-Trigger'] = 'close-modal'
             return response
         return redirect('item_list')
     if request.headers.get('HX-Request'):
