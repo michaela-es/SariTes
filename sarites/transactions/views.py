@@ -128,7 +128,7 @@ def mark_paid(request, pk):
             response['HX-Refresh'] = 'true'
             return response
         return redirect(request.META.get('HTTP_REFERER', '/'))
-    return JsonResponse({'error': 'POST required'}, status=405)
+    return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
 @login_required
@@ -142,4 +142,4 @@ def mark_all_paid(request, creditor_id):
             response['HX-Refresh'] = 'true'
             return response
         return redirect(request.META.get('HTTP_REFERER', '/'))
-    return JsonResponse({'error': 'POST required'}, status=405)
+    return redirect(request.META.get('HTTP_REFERER', '/'))
