@@ -98,13 +98,31 @@ def dashboard_partials(request):
     for s in request.GET.getlist('sections'):
         sections.extend([x.strip() for x in s.split(',') if x.strip()])
 
+    date_filter = request.GET.get('date', '')
+    date_from = request.GET.get('from', '')
+    date_to = request.GET.get('to', '')
+
+    txs = Transaction.objects.select_related('item', 'creditor').all()
+    if date_filter == 'today':
+        txs = txs.filter(created_at__date=today)
+    elif date_filter == 'week':
+        txs = txs.filter(created_at__date__gte=today - timedelta(days=today.weekday()))
+    elif date_filter == 'month':
+        txs = txs.filter(created_at__date__gte=today.replace(day=1))
+    elif date_from and date_to:
+        txs = txs.filter(created_at__date__gte=date_from, created_at__date__lte=date_to)
+
     context = {
         'recent': Transaction.objects.select_related('item', 'creditor').all()[:10],
+        'transactions': txs,
         'items': Item.objects.annotate(tx_count=Count('transactions')).all(),
         'creditors': Creditor.objects.annotate(tx_count=Count('transactions')).all(),
         'today_sales': Transaction.objects.filter(
             transaction_type='sale', created_at__date=today,
         ).aggregate(total=Sum('total'))['total'] or 0,
+        'date_filter': date_filter,
+        'date_from': date_from,
+        'date_to': date_to,
     }
 
     html = {}
@@ -121,6 +139,16 @@ def dashboard_partials(request):
                 'show_actions': False,
                 'show_status': False,
                 'empty_message': 'No transactions yet. Try a quick entry above!',
+            }, request=request)
+        elif s == 'txns':
+            html['txns-table'] = render_to_string('partials/_transaction_table.html', {
+                **context,
+                'transactions': txs,
+                'show_creditor': True,
+                'show_actions': True,
+                'show_status': False,
+                'empty_message': 'No transactions in this period.',
+                'max_height': '60vh',
             }, request=request)
         elif s == 'items':
             html['items-table'] = render_to_string('partials/_items_table.html', context, request=request)
