@@ -1,6 +1,5 @@
 import json
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.db.models import Q
 from .models import Item
@@ -10,7 +9,6 @@ from transactions.models import Transaction
 from creditors.models import Creditor
 
 
-@login_required
 def item_list(request):
     query = request.GET.get('q', '')
     items = Item.objects.all()
@@ -19,7 +17,6 @@ def item_list(request):
     return render(request, 'items/item_list.html', {'items': items, 'query': query})
 
 
-@login_required
 def item_create(request):
     if request.method == 'POST':
         form = ItemForm(request.POST)
@@ -37,7 +34,6 @@ def item_create(request):
     return render(request, template, {'form': form})
 
 
-@login_required
 def item_edit(request, pk):
     item = get_object_or_404(Item, pk=pk)
     if request.method == 'POST':
@@ -56,7 +52,6 @@ def item_edit(request, pk):
     return render(request, template, {'form': form, 'item': item})
 
 
-@login_required
 def item_delete(request, pk):
     item = get_object_or_404(Item, pk=pk)
     if request.method == 'POST':
@@ -71,7 +66,6 @@ def item_delete(request, pk):
     return render(request, 'items/item_confirm_delete.html', {'item': item})
 
 
-@login_required
 def upload_excel(request):
     if request.method == 'POST' and request.FILES.get('file'):
         result = import_items_from_excel(request.FILES['file'])
@@ -79,7 +73,14 @@ def upload_excel(request):
     return JsonResponse({'error': 'No file provided'}, status=400)
 
 
-@login_required
+def public_items(request):
+    q = request.GET.get('q', '')
+    items = Item.objects.all()
+    if q:
+        items = items.filter(name__icontains=q)
+    return render(request, 'items/public_items.html', {'items': items, 'query': q})
+
+
 def item_suggest(request):
     q = request.GET.get('q', '')
     if len(q) < 1:
@@ -88,7 +89,6 @@ def item_suggest(request):
     return JsonResponse(list(items), safe=False)
 
 
-@login_required
 def nlp_search(request):
     text = request.GET.get('q', '')
     parsed = parse_nlp_input(text)

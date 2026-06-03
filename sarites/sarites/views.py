@@ -1,7 +1,6 @@
 import json
 from datetime import date, timedelta, datetime
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
 from django.db.models import Sum, Count, Q
 from django.template.loader import render_to_string
 from django.http import JsonResponse
@@ -11,7 +10,6 @@ from creditors.models import Creditor
 from items.models import Item
 
 
-@login_required
 def dashboard(request):
     today = timezone.now().date()
     week_ago = today - timedelta(days=today.weekday())
@@ -52,7 +50,6 @@ def dashboard(request):
     })
 
 
-@login_required
 def analytics_data(request):
     days = int(request.GET.get('days', 30))
     since = timezone.now() - timedelta(days=days)
@@ -91,7 +88,6 @@ def analytics_data(request):
     })
 
 
-@login_required
 def dashboard_partials(request):
     today = timezone.now().date()
     sections = []

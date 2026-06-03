@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sarites — {% block title %}Inventory{% endblock %}</title>
+    <title>SariTes — {% block title %}Inventory{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="https://unpkg.com/htmx.org@1.9.12"></script>
@@ -13,13 +13,16 @@
     {% if user.is_authenticated %}
     <nav class="bg-gray-900 text-white px-6 py-3 flex items-center justify-between shadow-lg">
         <div class="flex items-center gap-6">
-            <a href="/" class="text-xl font-bold tracking-tight">Sarites</a>
+            <a href="/" class="text-xl font-bold tracking-tight">SariTes</a>
             <div class="flex gap-1">
                 <a href="/" class="px-3 py-1.5 rounded text-sm font-medium {% if request.path == '/' %}bg-white/20{% else %}hover:bg-white/10{% endif %} transition">
                     <i class="bi bi-speedometer2"></i> Dashboard
                 </a>
                 <a href="/items/" class="px-3 py-1.5 rounded text-sm font-medium {% if '/items' in request.path %}bg-white/20{% else %}hover:bg-white/10{% endif %} transition">
                     <i class="bi bi-box"></i> Items
+                </a>
+                <a href="{% url 'items:public_items' %}" target="_blank" class="px-3 py-1.5 rounded text-sm font-medium hover:bg-white/10 transition">
+                    <i class="bi bi-eye"></i> Public
                 </a>
             </div>
         </div>

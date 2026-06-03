@@ -1,7 +1,6 @@
 import json
 from datetime import date, timedelta
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
 from django.db.models import Sum, Q
 from django.utils import timezone
@@ -11,7 +10,6 @@ from items.models import Item
 from items.utils import parse_nlp_input
 
 
-@login_required
 def transaction_list(request):
     ttype = request.GET.get('type', '')
     q = request.GET.get('q', '')
@@ -51,7 +49,6 @@ def transaction_list(request):
     })
 
 
-@login_required
 def transaction_create(request):
     if request.method == 'POST':
         form = TransactionForm(request.POST)
@@ -68,7 +65,6 @@ def transaction_create(request):
     return render(request, template, {'form': form})
 
 
-@login_required
 def quick_sale(request):
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -123,7 +119,6 @@ def quick_sale(request):
     return JsonResponse({'error': 'POST required'}, status=405)
 
 
-@login_required
 def transaction_delete(request, pk):
     transaction = get_object_or_404(Transaction, pk=pk)
     if request.method == 'POST':
@@ -138,7 +133,6 @@ def transaction_delete(request, pk):
     return render(request, 'transactions/transaction_confirm_delete.html', {'transaction': transaction})
 
 
-@login_required
 def mark_paid(request, pk):
     transaction = get_object_or_404(Transaction, pk=pk, transaction_type='credit_sale')
     if request.method == 'POST':
@@ -152,7 +146,6 @@ def mark_paid(request, pk):
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
-@login_required
 def mark_all_paid(request, creditor_id):
     if request.method == 'POST':
         count = Transaction.objects.filter(
