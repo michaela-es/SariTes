@@ -34,6 +34,11 @@ def dashboard(request):
     creditors = Creditor.objects.annotate(tx_count=Count('transactions')).all()
     items = Item.objects.annotate(tx_count=Count('transactions')).all()
 
+    today_sales = Transaction.objects.filter(
+        transaction_type__in=['sale', 'credit_sale'],
+        created_at__date=today,
+    ).aggregate(total=Sum('total'))['total'] or 0
+
     selected_creditor = request.GET.get('creditor', '')
     creditor_detail = None
     if selected_creditor:
@@ -44,6 +49,7 @@ def dashboard(request):
         'transactions': txs,
         'creditors': creditors,
         'items': items,
+        'today_sales': today_sales,
         'creditor_detail': creditor_detail,
         'selected_creditor': selected_creditor,
         'date_filter': date_filter,
