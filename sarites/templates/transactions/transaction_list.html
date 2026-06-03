@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}Transactions{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Transactions</h3>
+    <a href="{% url 'transactions:transaction_create' %}" class="btn btn-primary btn-sm">
+        <i class="bi bi-plus-lg"></i> New Transaction
+    </a>
+</div>
+
+<div class="d-flex flex-wrap gap-2 mb-3 align-items-center">
+    <a href="{% url 'transactions:transaction_list' %}?date=today" class="btn btn-sm {% if date_filter == 'today' %}btn-dark{% else %}btn-outline-secondary{% endif %}">Today</a>
+    <a href="{% url 'transactions:transaction_list' %}?date=week" class="btn btn-sm {% if date_filter == 'week' %}btn-dark{% else %}btn-outline-secondary{% endif %}">This Week</a>
+    <a href="{% url 'transactions:transaction_list' %}?date=month" class="btn btn-sm {% if date_filter == 'month' %}btn-dark{% else %}btn-outline-secondary{% endif %}">This Month</a>
+    <div class="vr"></div>
+    <form method="get" class="d-flex gap-1 align-items-center">
+        <input type="date" name="from" class="form-control form-control-sm" value="{{ date_from }}" style="width:140px">
+        <span>—</span>
+        <input type="date" name="to" class="form-control form-control-sm" value="{{ date_to }}" style="width:140px">
+        <button class="btn btn-sm btn-outline-primary"><i class="bi bi-funnel"></i></button>
+        {% if date_filter or date_from %}<a href="{% url 'transactions:transaction_list' %}" class="btn btn-sm btn-outline-danger"><i class="bi bi-x"></i></a>{% endif %}
+    </form>
+    <div class="vr"></div>
+    <select name="type" class="form-select form-select-sm w-auto" onchange="window.location='{% url 'transactions:transaction_list' %}?date={{ date_filter }}&type='+this.value">
+        <option value="">All Types</option>
+        <option value="stock_in" {% if filter_type == 'stock_in' %}selected{% endif %}>Stock In</option>
+        <option value="stock_out" {% if filter_type == 'stock_out' %}selected{% endif %}>Stock Out</option>
+        <option value="sale" {% if filter_type == 'sale' %}selected{% endif %}>Sale</option>
+        <option value="credit_sale" {% if filter_type == 'credit_sale' %}selected{% endif %}>Credit Sale</option>
+    </select>
+</div>
+
+{% if totals.total_sum %}
+<div class="alert alert-info py-2">Total: <strong>₱{{ totals.total_sum|floatformat:2 }}</strong></div>
+{% endif %}
+
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Item</th>
+                <th>Qty</th>
+                <th>Total</th>
+                <th>Creditor</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in transactions %}
+            <tr>
+                <td>{{ t.created_at|date:"M d, H:i" }}</td>
+                <td>
+                    <span class="badge {% if t.transaction_type == 'stock_in' %}bg-success{% elif t.transaction_type == 'stock_out' %}bg-warning text-dark{% elif t.transaction_type == 'credit_sale' %}bg-info text-dark{% else %}bg-primary{% endif %}">
+                        {{ t.get_transaction_type_display }}
+                    </span>
+                </td>
+                <td>{{ t.item.name }}</td>
+                <td>{{ t.qty }}</td>
+                <td>₱{{ t.total|floatformat:2 }}</td>
+                <td>{% if t.creditor %}{{ t.creditor.name }}{% else %}—{% endif %}</td>
+                <td>
+                    <a href="{% url 'transactions:transaction_delete' t.pk %}" class="btn btn-sm btn-outline-danger py-0"><i class="bi bi-trash"></i></a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" class="text-center text-muted">No transactions.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
