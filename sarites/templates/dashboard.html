@@ -311,16 +311,27 @@
 {% block extra_scripts %}
 <script>
 // ── TABS ──
+function switchTab(name) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    document.querySelector(`[data-tab="${name}"]`).classList.add('active');
+    document.getElementById('tab-' + name).classList.add('active');
+    if (name === 'charts') loadCharts();
+    if (name === 'items') filterItems();
+}
+
 document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-        if (btn.dataset.tab === 'charts') loadCharts();
-        if (btn.dataset.tab === 'items') filterItems();
+        switchTab(btn.dataset.tab);
+        history.replaceState(null, '', '#' + btn.dataset.tab);
     });
 });
+
+// Handle hash on load
+const hashTab = location.hash.slice(1);
+if (hashTab && document.querySelector(`[data-tab="${hashTab}"]`)) {
+    switchTab(hashTab);
+}
 
 // ── MODAL ──
 function openModal(id) { document.getElementById(id).classList.remove('hidden'); document.getElementById(id).classList.add('flex'); }
