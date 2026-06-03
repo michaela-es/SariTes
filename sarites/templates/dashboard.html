@@ -108,7 +108,7 @@
                             {% if item.qty == 0 %}bg-red-100 text-red-700
                             {% elif item.qty <= 10 %}bg-yellow-100 text-yellow-700
                             {% else %}bg-green-100 text-green-700{% endif %}">
-                            {% if item.qty == 0 %}Out{% elif item.qty <= 10 %}Low{% else %}In{% endif %}
+                            {% if item.qty == 0 %}Out of Stock{% elif item.qty <= 10 %}Low Stock{% else %}In Stock{% endif %}
                         </span>
                     </td>
                 </tr>
