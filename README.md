@@ -40,8 +40,11 @@ This reduces a multi-click form to a single text entry, making day-to-day operat
 pip install -r requirements.txt
 cd sarites
 python manage.py migrate
-python manage.py seed        # sample data
+python manage.py seed                          # sample data
+python manage.py createsuperuser --username admin  # create login credentials
 python manage.py runserver
 ```
+
+Open `http://127.0.0.1:8000/` and log in with the superuser credentials.
 
 For Supabase: copy `.env.example` → `.env`, fill in `DATABASE_URL`, then `python manage.py migrate`.
