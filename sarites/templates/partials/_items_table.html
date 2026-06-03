@@ -7,6 +7,7 @@
                 <th class="text-right px-2 sm:px-4 py-2 sm:py-3">Stock</th>
                 <th class="hidden sm:table-cell text-right px-2 sm:px-4 py-2 sm:py-3">Txns</th>
                 <th class="text-left px-2 sm:px-4 py-2 sm:py-3">Status</th>
+                <th class="text-center px-2 sm:px-4 py-2 sm:py-3 w-14 sm:w-20"></th>
             </tr>
         </thead>
         <tbody class="divide-y divide-gray-100">
@@ -24,9 +25,13 @@
                         {% if item.qty == 0 %}Out of Stock{% elif item.qty <= 10 %}Low Stock{% else %}In Stock{% endif %}
                     </span>
                 </td>
+                <td class="px-2 sm:px-4 py-1.5 sm:py-2.5 text-center whitespace-nowrap">
+                    <button hx-get="{% url 'items:item_edit' item.pk %}" hx-target="#formModalContent" onclick="openModal('formModal')" class="text-gray-600 hover:text-gray-900 mr-1 sm:mr-2 bg-transparent border-0 cursor-pointer"><i class="bi bi-pencil text-xs sm:text-sm"></i></button>
+                    <a href="#" hx-get="{% url 'items:item_delete' item.pk %}" hx-target="#formModalContent" onclick="openModal('formModal')" class="text-red-500 hover:text-red-700"><i class="bi bi-trash text-xs sm:text-sm"></i></a>
+                </td>
             </tr>
             {% empty %}
-            <tr><td colspan="5" class="px-2 sm:px-4 py-6 sm:py-8 text-center text-gray-400">No items yet.</td></tr>
+            <tr><td colspan="6" class="px-2 sm:px-4 py-6 sm:py-8 text-center text-gray-400">No items yet.</td></tr>
             {% endfor %}
         </tbody>
     </table>

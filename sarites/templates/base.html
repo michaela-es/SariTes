@@ -33,6 +33,7 @@
     </nav>
     {% endif %}
 
+    <div id="toast" class="fixed top-4 right-4 z-[100] hidden"></div>
     <main class="max-w-7xl mx-auto px-4 py-6">
         {% if messages %}
             {% for message in messages %}
@@ -46,7 +47,17 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
     <script>
-    document.addEventListener('dashboard-updated', () => {
+    function openModal(id) { var el = document.getElementById(id); if (el) { el.classList.remove('hidden'); el.classList.add('flex'); } }
+    function closeModal(id) { var el = document.getElementById(id); if (el) { el.classList.add('hidden'); el.classList.remove('flex'); } }
+    function showToast(msg, type) {
+        var el = document.getElementById('toast');
+        if (!el) return;
+        el.className = 'fixed top-4 right-4 z-[100] px-4 py-3 rounded-xl shadow-xl text-sm font-medium transition-all duration-300 translate-y-0 opacity-100 ' + (type === 'error' ? 'bg-red-600 text-white' : 'bg-green-600 text-white');
+        el.innerHTML = '<i class="bi ' + (type === 'error' ? 'bi-exclamation-circle' : 'bi-check-circle') + ' mr-1.5"></i> ' + msg;
+        el.classList.remove('hidden');
+        setTimeout(function() { el.classList.add('hidden'); }, 3000);
+    }
+    document.addEventListener('dashboard-updated', function() {
         if (!document.body.classList.contains('dashboard-page')) location.reload();
     });
     </script>

@@ -217,7 +217,6 @@
 <div id="formModal" class="fixed inset-0 z-50 hidden bg-black/40 items-center justify-center" onclick="if(event.target===this)closeModal('formModal')">
     <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4 overflow-hidden" id="formModalContent" onclick="event.stopPropagation()"></div>
 </div>
-<div id="toast" class="fixed top-4 right-4 z-[100] hidden"></div>
 {% endblock %}
 
 {% block extra_scripts %}
@@ -244,10 +243,6 @@ const hashTab = location.hash.slice(1);
 if (hashTab && document.querySelector(`[data-tab="${hashTab}"]`)) {
     switchTab(hashTab);
 }
-
-// ── MODAL ──
-function openModal(id) { document.getElementById(id).classList.remove('hidden'); document.getElementById(id).classList.add('flex'); }
-function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
 
 // ── NLP + AUTOCOMPLETE ──
 let currentNlpResult = null;
@@ -391,16 +386,6 @@ document.getElementById('cred-search')?.addEventListener('input', function() {
         row.style.display = row.dataset.name.includes(q) ? '' : 'none';
     });
 });
-
-// ── TOAST ──
-function showToast(msg, type) {
-    const el = document.getElementById('toast');
-    if (!el) return;
-    el.className = 'fixed top-4 right-4 z-[100] px-4 py-3 rounded-lg shadow-xl text-sm font-medium transition-all duration-300 translate-y-0 opacity-100 ' + (type === 'error' ? 'bg-red-600 text-white' : 'bg-green-600 text-white');
-    el.innerHTML = '<i class="bi ' + (type === 'error' ? 'bi-exclamation-circle' : 'bi-check-circle') + ' mr-1.5"></i> ' + msg;
-    el.classList.remove('hidden');
-    setTimeout(() => { el.classList.add('hidden'); }, 3000);
-}
 
 // ── SPA PARTIAL REFRESH ──
 function refreshSections(sections) {

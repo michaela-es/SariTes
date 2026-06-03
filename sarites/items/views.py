@@ -61,7 +61,13 @@ def item_delete(request, pk):
     item = get_object_or_404(Item, pk=pk)
     if request.method == 'POST':
         item.delete()
+        if request.headers.get('HX-Request'):
+            response = HttpResponse()
+            response['HX-Trigger'] = 'dashboard-updated'
+            return response
         return redirect('item_list')
+    if request.headers.get('HX-Request'):
+        return render(request, 'items/item_confirm_delete.html', {'item': item})
     return render(request, 'items/item_confirm_delete.html', {'item': item})
 
 
