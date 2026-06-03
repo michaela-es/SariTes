@@ -68,7 +68,7 @@ def analytics_data(request):
     stocks = trans.filter(transaction_type__in=['stock_in', 'stock_out'])
 
     daily_sales = []
-    for i in range(days):
+    for i in range(days + 1):
         day = (since + timedelta(days=i)).date()
         total = sales.filter(created_at__date=day).aggregate(s=Sum('total'))['s'] or 0
         daily_sales.append({'date': day.isoformat(), 'total': float(total)})
