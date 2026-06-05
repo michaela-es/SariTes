@@ -8,6 +8,7 @@
                 <th class="text-left px-2 sm:px-4 py-2 sm:py-3">Type</th>
                 <th class="text-left px-2 sm:px-4 py-2 sm:py-3">Item</th>
                 <th class="text-right px-2 sm:px-4 py-2 sm:py-3">Qty</th>
+                <th class="text-right px-2 sm:px-4 py-2 sm:py-3">Price</th>
                 <th class="text-right px-2 sm:px-4 py-2 sm:py-3">Total</th>
                 {% if show_creditor %}<th class="hidden md:table-cell text-left px-2 sm:px-4 py-2 sm:py-3">Creditor</th>{% endif %}
                 {% if show_status %}<th class="hidden sm:table-cell text-left px-2 sm:px-4 py-2 sm:py-3">Status</th>{% endif %}
@@ -29,6 +30,7 @@
                 </td>
                 <td class="px-2 sm:px-4 py-1.5 sm:py-2.5 truncate max-w-[80px] sm:max-w-none">{{ t.item.name }}</td>
                 <td class="px-2 sm:px-4 py-1.5 sm:py-2.5 text-right">{{ t.qty }}</td>
+                <td class="px-2 sm:px-4 py-1.5 sm:py-2.5 text-right whitespace-nowrap">₱{{ t.unit_price|default:t.item.price|floatformat:2 }}</td>
                 <td class="px-2 sm:px-4 py-1.5 sm:py-2.5 text-right font-medium whitespace-nowrap">₱{{ t.total|floatformat:2 }}</td>
                 {% if show_creditor %}<td class="hidden md:table-cell px-2 sm:px-4 py-1.5 sm:py-2.5 truncate max-w-[100px]">{{ t.creditor.name|default:"—" }}</td>{% endif %}
                 {% if show_status %}
@@ -46,7 +48,7 @@
                 {% endif %}
             </tr>
             {% empty %}
-            <tr><td colspan="{% if show_creditor and show_actions %}7{% elif show_creditor or show_actions or show_status %}6{% else %}5{% endif %}" class="px-2 sm:px-4 py-6 sm:py-8 text-center text-gray-400">{{ empty_message|default:"No transactions." }}</td></tr>
+            <tr><td colspan="{% if show_creditor and show_actions %}8{% elif show_creditor or show_actions or show_status %}7{% else %}6{% endif %}" class="px-2 sm:px-4 py-6 sm:py-8 text-center text-gray-400">{{ empty_message|default:"No transactions." }}</td></tr>
             {% endfor %}
         </tbody>
     </table>

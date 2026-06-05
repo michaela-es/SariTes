@@ -293,6 +293,17 @@ if (nlpInput) {
                     if (data.creditor) html += ` <span class="inline-block px-2 py-0.5 rounded-full text-xs bg-cyan-100 text-cyan-700">@${data.creditor.name}</span>`;
                     if (data.low_stock) html += `<div class="mt-1 text-red-600 text-xs font-medium"><i class="bi bi-exclamation-triangle"></i> Only ${data.available} in stock — cannot sell ${data.item.qty}</div>`;
                     p.innerHTML = html;
+                } else if (data.is_new_item) {
+                    const suggested = data.suggested_price || '';
+                    currentNlpResult = {is_new_item: true, ...data};
+                    const typeLabels = {stock_in: 'Stock In', stock_out: 'Stock Out', sale: 'Sale', credit_sale: 'Credit Sale'};
+                    const typeColors = {stock_in: 'bg-green-100 text-green-700', stock_out: 'bg-yellow-100 text-yellow-700', sale: 'bg-blue-100 text-blue-700', credit_sale: 'bg-cyan-100 text-cyan-700'};
+                    const tc = typeColors[data.transaction_type] || 'bg-gray-100 text-gray-700';
+                    let html = `<span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium ${tc} mr-2">${typeLabels[data.transaction_type] || data.transaction_type}</span>`;
+                    html += `<span class="text-amber-700 font-semibold">NEW: ${data.parsed_name}</span>`;
+                    html += ` <span class="text-xs text-gray-500">Price:</span> <input type="number" step="0.01" id="new-item-price" class="w-20 px-2 py-0.5 border border-gray-300 rounded text-sm" placeholder="0.00" value="${suggested}">`;
+                    if (data.creditor) html += ` <span class="inline-block px-2 py-0.5 rounded-full text-xs bg-cyan-100 text-cyan-700">@${data.creditor.name}</span>`;
+                    p.innerHTML = html;
                 } else {
                     currentNlpResult = null;
                     p.innerHTML = data.parsed_name ? `<span class="text-red-500">No match for "${data.parsed_name}"</span>` : '';
@@ -309,15 +320,24 @@ function quickSale() {
     const val = nlpInput.value.trim();
     if (!val) return;
     if (currentNlpResult && currentNlpResult.low_stock) { showToast('Not enough stock!', 'error'); return; }
+    const payload = {text: val};
+    if (currentNlpResult && currentNlpResult.is_new_item) {
+        const priceInput = document.getElementById('new-item-price');
+        if (priceInput) {
+            const p = parseFloat(priceInput.value);
+            if (!isNaN(p) && p > 0) payload.price = p;
+        }
+    }
     fetch('{% url "transactions:quick_sale" %}', {
         method: 'POST',
         headers: {'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}'},
-        body: JSON.stringify({text: val}),
+        body: JSON.stringify(payload),
     })
     .then(r => r.json())
     .then(data => {
         if (data.error) { showToast(data.error, 'error'); return; }
         nlpInput.value = '';
+        currentNlpResult = null;
         const typeLabels = {stock_in: 'Stock In', stock_out: 'Stock Out', sale: 'Sale', credit_sale: 'Credit'};
         const tl = typeLabels[data.type] || data.type;
         document.getElementById('nlp-preview').innerHTML = `<span class="text-green-700 font-semibold">✓ ${tl}: ${data.qty}x ${data.item} — ₱${data.total.toFixed(2)}</span>`;

@@ -79,26 +79,27 @@ def quick_sale(request):
 
         name = parsed['name'].strip().title()
         item = Item.objects.filter(name__iexact=name).first()
+
         if not item:
-            item = Item.objects.create(name=name, price=0, qty=0)
+            new_price = data.get('price') or parsed.get('unit_price') or 0
+            item = Item.objects.create(name=name, price=new_price, qty=0)
+
         creditor = None
         ttype = parsed.get('transaction_type', 'sale')
         if parsed.get('creditor'):
             from creditors.models import Creditor
-            name = parsed['creditor'].strip().title()
-            creditor = Creditor.objects.filter(name__iexact=name).first()
+            cname = parsed['creditor'].strip().title()
+            creditor = Creditor.objects.filter(name__iexact=cname).first()
             if not creditor:
-                creditor = Creditor.objects.create(name=name)
+                creditor = Creditor.objects.create(name=cname)
             if ttype == 'sale':
                 ttype = 'credit_sale'
 
         qty = parsed['qty']
         reduces_stock = ttype in ('sale', 'credit_sale', 'stock_out')
 
-        if reduces_stock and item.qty < qty:
-            return JsonResponse({'error': f'Not enough stock. {item.name} has {item.qty}, you need {qty}.'}, status=400)
-
-        total = float(item.price) * qty
+        unit_price = float(item.price)
+        total = unit_price * qty
 
         if reduces_stock:
             item.qty -= qty
@@ -110,6 +111,7 @@ def quick_sale(request):
             item=item,
             transaction_type=ttype,
             qty=qty,
+            unit_price=unit_price,
             total=total,
             creditor=creditor,
         )
@@ -119,6 +121,7 @@ def quick_sale(request):
             'item': item.name,
             'qty': qty,
             'total': total,
+            'unit_price': float(unit_price),
             'type': ttype,
         })
     return JsonResponse({'error': 'POST required'}, status=405)

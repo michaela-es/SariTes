@@ -140,9 +140,12 @@ def nlp_search(request):
             'low_stock': low_stock,
             'available': match.qty,
         })
+    suggested_price = parsed.get('unit_price')
     return JsonResponse({
         'match': False,
+        'is_new_item': True,
         'parsed_name': parsed['name'],
         'transaction_type': parsed['transaction_type'],
+        'suggested_price': suggested_price,
         'creditor': creditor_data,
     })

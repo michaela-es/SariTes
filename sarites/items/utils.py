@@ -64,13 +64,19 @@ def parse_nlp_input(text):
         return None
 
     creditor = None
+    unit_price = None
     if '@' in name:
-        name, _, creditor = name.partition('@')
-        creditor = creditor.strip()
+        name, _, suffix = name.partition('@')
+        suffix = suffix.strip()
+        try:
+            unit_price = float(suffix)
+        except ValueError:
+            creditor = suffix
 
     return {
         'qty': qty,
         'name': name.strip(),
         'creditor': creditor,
+        'unit_price': unit_price,
         'transaction_type': ttype,
     }

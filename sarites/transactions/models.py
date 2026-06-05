@@ -14,6 +14,7 @@ class Transaction(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='transactions')
     transaction_type = models.CharField(max_length=20, choices=TYPE_CHOICES)
     qty = models.IntegerField()
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     total = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
     creditor = models.ForeignKey(Creditor, on_delete=models.SET_NULL, blank=True, null=True, related_name='transactions')
     notes = models.TextField(blank=True)
@@ -23,8 +24,10 @@ class Transaction(models.Model):
         ordering = ['-created_at']
 
     def save(self, *args, **kwargs):
+        if self.unit_price is None:
+            self.unit_price = self.item.price
         if self.total is None:
-            self.total = self.item.price * self.qty
+            self.total = self.unit_price * self.qty
         super().save(*args, **kwargs)
 
     def __str__(self):
