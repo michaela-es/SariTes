@@ -1,3 +1,4 @@
+import re
 import pandas as pd
 from .models import Item
 
@@ -65,13 +66,18 @@ def parse_nlp_input(text):
 
     creditor = None
     unit_price = None
-    if '@' in name:
-        name, _, suffix = name.partition('@')
-        suffix = suffix.strip()
-        try:
-            unit_price = float(suffix)
-        except ValueError:
-            creditor = suffix
+
+    # extract p:number for price
+    m = re.search(r'\bp:([\d.]+)', name)
+    if m:
+        unit_price = float(m.group(1))
+        name = name.replace(m.group(0), '')
+
+    # extract @text for creditor
+    m = re.search(r'@(\S+)', name)
+    if m:
+        creditor = m.group(1).strip()
+        name = name.replace(m.group(0), '')
 
     return {
         'qty': qty,

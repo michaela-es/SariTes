@@ -108,8 +108,8 @@ def nlp_search(request):
 
     creditor_data = None
     if parsed.get('creditor'):
-        name = parsed['creditor'].strip().title()
-        creditor = Creditor.objects.filter(name__iexact=name).first()
+        cname = parsed['creditor'].strip().title()
+        creditor = Creditor.objects.filter(name__iexact=cname).first()
         if creditor:
             creditor_data = {'id': creditor.id, 'name': creditor.name}
 
