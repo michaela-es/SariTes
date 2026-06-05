@@ -1,9 +1,7 @@
 import json
-from urllib.parse import urlparse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, JsonResponse
 from django.db.models import Q, Count
-from django.template.loader import render_to_string
 from .models import Item
 from .forms import ItemForm
 from .utils import import_items_from_excel, parse_nlp_input
@@ -61,26 +59,12 @@ def item_delete(request, pk):
     if request.method == 'POST':
         item.delete()
         if request.headers.get('HX-Request'):
-            current_url = request.headers.get('HX-Current-URL', '/')
-            path = urlparse(current_url).path
-            if path.startswith('/items/'):
-                response = HttpResponse()
-                response['HX-Location'] = current_url
-                response['HX-Trigger'] = 'close-modal'
-                return response
-            items_page = paginate(
-                Item.objects.annotate(tx_count=Count('transactions')).all(),
-                request, param_name='items_page'
-            )
-            html = render_to_string('partials/_items_table.html', {'items': items_page}, request=request)
-            response = HttpResponse(html)
-            response['HX-Retarget'] = '#items-table'
+            response = HttpResponse()
             response['HX-Trigger'] = 'close-modal, dashboard-updated'
             return response
         return redirect('item_list')
-    if request.headers.get('HX-Request'):
-        return render(request, 'items/item_confirm_delete.html', {'item': item})
-    return render(request, 'items/item_confirm_delete.html', {'item': item})
+    ctx = {'post_url': request.path, 'title': 'Delete ' + item.name + '?', 'body': 'This action cannot be undone.'}
+    return render(request, 'partials/_confirm_delete.html', ctx)
 
 
 def upload_excel(request):

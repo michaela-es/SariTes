@@ -136,9 +136,9 @@ def transaction_delete(request, pk):
             response['HX-Trigger'] = 'dashboard-updated, close-modal'
             return response
         return redirect('transaction_list')
-    if request.headers.get('HX-Request'):
-        return render(request, 'transactions/transaction_confirm_delete.html', {'transaction': transaction})
-    return render(request, 'transactions/transaction_confirm_delete.html', {'transaction': transaction})
+    label = '%s of %s x%s' % (transaction.get_transaction_type_display(), transaction.item.name, transaction.qty)
+    ctx = {'post_url': request.path, 'title': 'Delete Transaction?', 'body': label}
+    return render(request, 'partials/_confirm_delete.html', ctx)
 
 
 def mark_paid(request, pk):
