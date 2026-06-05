@@ -30,8 +30,8 @@
                 </td>
                 <td class="px-2 sm:px-4 py-1.5 sm:py-2.5 truncate max-w-[80px] sm:max-w-none">{{ t.item.name }}</td>
                 <td class="px-2 sm:px-4 py-1.5 sm:py-2.5 text-right">{{ t.qty }}</td>
-                <td class="px-2 sm:px-4 py-1.5 sm:py-2.5 text-right whitespace-nowrap">₱{{ t.unit_price|default:t.item.price|floatformat:2 }}</td>
-                <td class="px-2 sm:px-4 py-1.5 sm:py-2.5 text-right font-medium whitespace-nowrap">₱{{ t.total|floatformat:2 }}</td>
+                <td class="px-2 sm:px-4 py-1.5 sm:py-2.5 text-right whitespace-nowrap">{% if t.transaction_type in 'stock_in,stock_out' %}—{% else %}₱{{ t.unit_price|default:t.item.price|floatformat:2 }}{% endif %}</td>
+                <td class="px-2 sm:px-4 py-1.5 sm:py-2.5 text-right font-medium whitespace-nowrap">{% if t.transaction_type in 'stock_in,stock_out' %}—{% else %}₱{{ t.total|floatformat:2 }}{% endif %}</td>
                 {% if show_creditor %}<td class="hidden md:table-cell px-2 sm:px-4 py-1.5 sm:py-2.5 truncate max-w-[100px]">{{ t.creditor.name|default:"—" }}</td>{% endif %}
                 {% if show_status %}
                 <td class="hidden sm:table-cell px-2 sm:px-4 py-1.5 sm:py-2.5">

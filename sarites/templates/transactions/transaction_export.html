@@ -53,8 +53,8 @@
                 <td>{{ t.item.name }}</td>
                 <td>{{ t.get_transaction_type_display }}</td>
                 <td>{{ t.qty }}</td>
-                <td>₱{{ t.unit_price|floatformat:2 }}</td>
-                <td class="text-right">₱{{ t.total|floatformat:2 }}</td>
+                <td>{% if t.transaction_type in 'stock_in,stock_out' %}—{% else %}₱{{ t.unit_price|floatformat:2 }}{% endif %}</td>
+                <td class="text-right">{% if t.transaction_type in 'stock_in,stock_out' %}—{% else %}₱{{ t.total|floatformat:2 }}{% endif %}</td>
                 {% if not filter_type or filter_type == 'credit_sale' %}<td>{{ t.creditor.name|default:"—" }}</td>{% endif %}
             </tr>
             {% empty %}
