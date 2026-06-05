@@ -4,9 +4,9 @@
     {% if body %}<p class="text-sm text-gray-500 mb-6">{{ body }}</p>{% endif %}
     <form method="post" hx-post="{{ post_url }}" hx-swap="none">
         {% csrf_token %}
-        <div class="flex gap-2 justify-center">
-            <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition">Delete</button>
-            <button type="button" onclick="closeModal('formModal')" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition">Cancel</button>
+        <div class="flex gap-3 justify-center">
+            <button type="submit" class="flex-1 sm:flex-none px-4 py-3 sm:py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition">Delete</button>
+            <button type="button" onclick="closeModal('formModal')" class="flex-1 sm:flex-none px-4 py-3 sm:py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition">Cancel</button>
         </div>
     </form>
 </div>

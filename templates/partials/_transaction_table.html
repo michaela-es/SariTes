@@ -43,7 +43,7 @@
                     {% if t.transaction_type == 'credit_sale' %}
                     {% include 'transactions/_mark_paid.html' with transaction=t %}
                     {% endif %}
-                    <button hx-get="{% url 'transactions:transaction_delete' t.pk %}" hx-target="#formModalContent" class="text-red-500 hover:text-red-700 bg-transparent border-0 cursor-pointer{% if t.transaction_type == 'credit_sale' %} ms-0.5 sm:ms-1{% endif %}"><i class="bi bi-trash text-xs sm:text-sm"></i></button>
+                    <button hx-get="{% url 'transactions:transaction_delete' t.pk %}" hx-target="#formModalContent" class="text-red-500 hover:text-red-700 bg-transparent border-0 cursor-pointer p-1.5 sm:p-0{% if t.transaction_type == 'credit_sale' %} ms-0.5 sm:ms-1{% endif %}"><i class="bi bi-trash text-sm sm:text-sm"></i></button>
                 </td>
                 {% endif %}
             </tr>
