@@ -412,7 +412,7 @@ function refreshSections(sections, extraParams) {
         .then(html => {
             Object.keys(html).forEach(id => {
                 const el = document.getElementById(id);
-                if (el) el.innerHTML = html[id];
+                if (el) { el.innerHTML = html[id]; htmx.process(el); }
             });
             if (html['items-table']) {
                 countStockLevels();
