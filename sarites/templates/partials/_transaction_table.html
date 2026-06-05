@@ -54,5 +54,5 @@
     </table>
 </div>
 {% if show_pagination %}
-{% include 'partials/_pagination.html' with page_obj=transactions param_name='page' hx_target=pagination_hx_target base_url=pagination_base_url %}
+{% include 'partials/_pagination.html' with page_obj=transactions param_name='page' hx_target=pagination_hx_target %}
 {% endif %}

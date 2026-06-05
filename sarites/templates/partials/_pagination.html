@@ -6,13 +6,13 @@
     </div>
     <div class="flex gap-1">
         {% if page_obj.has_previous %}
-        <a {% if hx_target %}hx-get="{{ base_url }}&{{ param_name }}={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}" hx-target="{{ hx_target }}" hx-swap="innerHTML"{% else %}href="?{% url_replace page=page_obj.previous_page_number %}"{% endif %}
+        <a {% if hx_target %}hx-get="?{% url_replace_page param_name page_obj.previous_page_number %}" hx-target="{{ hx_target }}" hx-swap="outerHTML"{% else %}href="?{% url_replace_page param_name page_obj.previous_page_number %}"{% endif %}
            class="px-3 py-1 text-xs font-medium rounded border border-gray-300 hover:bg-gray-100 transition flex items-center gap-1">
             <i class="bi bi-chevron-left"></i> Prev
         </a>
         {% endif %}
         {% if page_obj.has_next %}
-        <a {% if hx_target %}hx-get="{{ base_url }}&{{ param_name }}={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}" hx-target="{{ hx_target }}" hx-swap="innerHTML"{% else %}href="?{% url_replace page=page_obj.next_page_number %}"{% endif %}
+        <a {% if hx_target %}hx-get="?{% url_replace_page param_name page_obj.next_page_number %}" hx-target="{{ hx_target }}" hx-swap="outerHTML"{% else %}href="?{% url_replace_page param_name page_obj.next_page_number %}"{% endif %}
            class="px-3 py-1 text-xs font-medium rounded border border-gray-200 hover:bg-gray-100 transition flex items-center gap-1">
             Next <i class="bi bi-chevron-right"></i>
         </a>

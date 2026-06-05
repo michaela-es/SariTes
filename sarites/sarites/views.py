@@ -16,6 +16,7 @@ def dashboard(request):
     week_ago = today - timedelta(days=today.weekday())
     month_start = today.replace(day=1)
 
+    q = request.GET.get('q', '')
     date_filter = request.GET.get('date', '')
     date_from = request.GET.get('from', '')
     date_to = request.GET.get('to', '')
@@ -31,10 +32,10 @@ def dashboard(request):
         txs = txs.filter(created_at__date__gte=date_from, created_at__date__lte=date_to)
 
     recent = Transaction.objects.select_related('item', 'creditor').all()[:10]
-    items_page = paginate(
-        Item.objects.annotate(tx_count=Count('transactions')).all(),
-        request, param_name='items_page'
-    )
+    items_qs = Item.objects.annotate(tx_count=Count('transactions')).all()
+    if q:
+        items_qs = items_qs.filter(name__icontains=q)
+    items_page = paginate(items_qs, request, param_name='items_page')
     creditors_page = paginate(
         Creditor.objects.annotate(tx_count=Count('transactions')).all(),
         request, param_name='creditors_page'
@@ -46,13 +47,6 @@ def dashboard(request):
         created_at__date=today,
     ).aggregate(total=Sum('total'))['total'] or 0
 
-    if date_filter:
-        txns_base_url = f'/?date={date_filter}'
-    elif date_from and date_to:
-        txns_base_url = f'/?from={date_from}&to={date_to}'
-    else:
-        txns_base_url = '/'
-
     context = {
         'recent': recent,
         'transactions': transactions_page,
@@ -62,10 +56,14 @@ def dashboard(request):
         'date_filter': date_filter,
         'date_from': date_from,
         'date_to': date_to,
-        'txns_base_url': txns_base_url,
-        'search_query': request.GET.get('q', ''),
+        'search_query': q,
     }
     if request.headers.get('HX-Request'):
+        target = request.headers.get('HX-Target', '')
+        if target == 'items-table':
+            return render(request, 'partials/_items_table.html', context)
+        if target == 'creditors-table':
+            return render(request, 'partials/_creditors_table.html', context)
         return render(request, 'partials/_txns_tab_content.html', context)
     return render(request, 'dashboard.html', context)
 
@@ -139,13 +137,6 @@ def dashboard_partials(request):
     )
     transactions_page = paginate(txs, request, param_name='page')
 
-    if date_filter:
-        txns_base_url = f'/?date={date_filter}'
-    elif date_from and date_to:
-        txns_base_url = f'/?from={date_from}&to={date_to}'
-    else:
-        txns_base_url = '/'
-
     context = {
         'recent': Transaction.objects.select_related('item', 'creditor').all()[:10],
         'transactions': transactions_page,
@@ -157,7 +148,6 @@ def dashboard_partials(request):
         'date_filter': date_filter,
         'date_from': date_from,
         'date_to': date_to,
-        'txns_base_url': txns_base_url,
         'search_query': q,
     }
 
@@ -184,7 +174,6 @@ def dashboard_partials(request):
                 'show_actions': True,
                 'show_status': False,
                 'show_pagination': True,
-                'pagination_base_url': txns_base_url,
                 'pagination_hx_target': '#txns-section',
                 'empty_message': 'No transactions in this period.',
                 'max_height': '60vh',
