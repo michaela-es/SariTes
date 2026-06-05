@@ -201,8 +201,14 @@ function clearPageParams(url) {
     return u.pathname + u.search + u.hash;
 }
 
+function clearModal() {
+    closeModal('formModal');
+    document.getElementById('formModalContent').innerHTML = '';
+}
+
 document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
+        clearModal();
         switchTab(btn.dataset.tab);
         history.replaceState(null, '', clearPageParams('#' + btn.dataset.tab));
     });
@@ -213,6 +219,13 @@ const hashTab = location.hash.slice(1);
 if (hashTab && document.querySelector(`[data-tab="${hashTab}"]`)) {
     switchTab(hashTab);
 }
+window.addEventListener('hashchange', () => {
+    const t = location.hash.slice(1);
+    if (t && document.querySelector(`[data-tab="${t}"]`)) {
+        clearModal();
+        switchTab(t);
+    }
+});
 
 // ── NLP + AUTOCOMPLETE ──
 let currentNlpResult = null;
