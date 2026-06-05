@@ -8,6 +8,7 @@ from .models import Transaction
 from .forms import TransactionForm
 from items.models import Item
 from items.utils import parse_nlp_input
+from sarites.pagination import paginate
 
 
 def transaction_list(request):
@@ -38,8 +39,9 @@ def transaction_list(request):
     if q:
         transactions = transactions.filter(Q(item__name__icontains=q) | Q(notes__icontains=q))
     totals = transactions.aggregate(total_sum=Sum('total'))
+    transactions_page = paginate(transactions, request, param_name='page')
     context = {
-        'transactions': transactions,
+        'transactions': transactions_page,
         'totals': totals,
         'filter_type': ttype,
         'query': q,

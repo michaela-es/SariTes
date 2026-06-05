@@ -1,0 +1,22 @@
+{% load pagination_tags %}
+{% if page_obj.has_previous or page_obj.has_next %}
+<div class="flex items-center justify-between px-4 py-3 border-t border-gray-200 bg-white rounded-b-xl">
+    <div class="text-xs text-gray-500">
+        {{ page_obj.paginator.count }} items — Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+    </div>
+    <div class="flex gap-1">
+        {% if page_obj.has_previous %}
+        <a {% if hx_target %}hx-get="{{ base_url }}{% if '?' in base_url %}&{% else %}?{% endif %}{{ param_name }}={{ page_obj.previous_page_number }}" hx-target="{{ hx_target }}" hx-swap="innerHTML"{% else %}href="?{% url_replace page=page_obj.previous_page_number %}"{% endif %}
+           class="px-3 py-1 text-xs font-medium rounded border border-gray-300 hover:bg-gray-100 transition flex items-center gap-1">
+            <i class="bi bi-chevron-left"></i> Prev
+        </a>
+        {% endif %}
+        {% if page_obj.has_next %}
+        <a {% if hx_target %}hx-get="{{ base_url }}{% if '?' in base_url %}&{% else %}?{% endif %}{{ param_name }}={{ page_obj.next_page_number }}" hx-target="{{ hx_target }}" hx-swap="innerHTML"{% else %}href="?{% url_replace page=page_obj.next_page_number %}"{% endif %}
+           class="px-3 py-1 text-xs font-medium rounded border border-gray-300 hover:bg-gray-100 transition flex items-center gap-1">
+            Next <i class="bi bi-chevron-right"></i>
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}

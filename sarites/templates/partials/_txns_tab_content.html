@@ -1,3 +1,4 @@
+{% load pagination_tags %}
 <div id="txns-section">
 <div class="flex flex-wrap items-center gap-2 mb-4">
     <a href="?date=today#txns"
@@ -22,5 +23,17 @@
         {% endif %}
     </form>
 </div>
-<div id="txns-table">{% include 'partials/_transaction_table.html' with transactions=transactions show_creditor=True show_actions=True show_status=False empty_message="No transactions in this period." max_height="60vh" %}</div>
+<div id="txns-table">
+{% if date_filter %}
+    {% with base_url='/?date='|add:date_filter %}
+        {% include 'partials/_transaction_table.html' with transactions=transactions show_creditor=True show_actions=True show_status=False empty_message="No transactions in this period." max_height="60vh" show_pagination=True pagination_base_url=base_url pagination_hx_target='#txns-section' %}
+    {% endwith %}
+{% elif date_from and date_to %}
+    {% with base_url='/?from='|add:date_from|add:'&to='|add:date_to %}
+        {% include 'partials/_transaction_table.html' with transactions=transactions show_creditor=True show_actions=True show_status=False empty_message="No transactions in this period." max_height="60vh" show_pagination=True pagination_base_url=base_url pagination_hx_target='#txns-section' %}
+    {% endwith %}
+{% else %}
+    {% include 'partials/_transaction_table.html' with transactions=transactions show_creditor=True show_actions=True show_status=False empty_message="No transactions in this period." max_height="60vh" show_pagination=True pagination_base_url='/' pagination_hx_target='#txns-section' %}
+{% endif %}
+</div>
 </div>

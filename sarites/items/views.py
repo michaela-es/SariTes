@@ -9,6 +9,7 @@ from .forms import ItemForm
 from .utils import import_items_from_excel, parse_nlp_input
 from transactions.models import Transaction
 from creditors.models import Creditor
+from sarites.pagination import paginate
 
 
 def item_list(request):
@@ -16,7 +17,8 @@ def item_list(request):
     items = Item.objects.all()
     if query:
         items = items.filter(Q(name__icontains=query))
-    return render(request, 'items/item_list.html', {'items': items, 'query': query})
+    items_page = paginate(items, request, param_name='page')
+    return render(request, 'items/item_list.html', {'items': items_page, 'query': query})
 
 
 def item_create(request):
@@ -66,8 +68,11 @@ def item_delete(request, pk):
                 response['HX-Location'] = current_url
                 response['HX-Trigger'] = 'close-modal'
                 return response
-            items = Item.objects.annotate(tx_count=Count('transactions')).all()
-            html = render_to_string('partials/_items_table.html', {'items': items}, request=request)
+            items_page = paginate(
+                Item.objects.annotate(tx_count=Count('transactions')).all(),
+                request, param_name='items_page'
+            )
+            html = render_to_string('partials/_items_table.html', {'items': items_page}, request=request)
             response = HttpResponse(html)
             response['HX-Retarget'] = '#items-table'
             response['HX-Trigger'] = 'close-modal'

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load pagination_tags %}
 {% block title %}{{ creditor.name }}{% endblock %}
 {% block content %}
 <div class="max-w-4xl mx-auto">
@@ -24,7 +25,7 @@
     </div>
 
     <h3 class="font-semibold text-gray-800 mb-3">Transactions</h3>
-    {% include 'partials/_transaction_table.html' with transactions=transactions show_creditor=False show_actions=True show_status=True empty_message="No transactions for this creditor." %}
+    {% include 'partials/_transaction_table.html' with transactions=transactions show_creditor=False show_actions=True show_status=True empty_message="No transactions for this creditor." show_pagination=True %}
 </div>
 
 <div id="formModal" class="fixed inset-0 z-50 hidden bg-black/40 items-center justify-center" onclick="if(event.target===this)closeModal('formModal')">

@@ -8,6 +8,7 @@ from django.utils import timezone
 from transactions.models import Transaction
 from creditors.models import Creditor
 from items.models import Item
+from .pagination import paginate
 
 
 def dashboard(request):
@@ -30,23 +31,38 @@ def dashboard(request):
         txs = txs.filter(created_at__date__gte=date_from, created_at__date__lte=date_to)
 
     recent = Transaction.objects.select_related('item', 'creditor').all()[:10]
-    creditors = Creditor.objects.annotate(tx_count=Count('transactions')).all()
-    items = Item.objects.annotate(tx_count=Count('transactions')).all()
+    items_page = paginate(
+        Item.objects.annotate(tx_count=Count('transactions')).all(),
+        request, param_name='items_page'
+    )
+    creditors_page = paginate(
+        Creditor.objects.annotate(tx_count=Count('transactions')).all(),
+        request, param_name='creditors_page'
+    )
+    transactions_page = paginate(txs, request, param_name='page')
 
     today_sales = Transaction.objects.filter(
         transaction_type='sale',
         created_at__date=today,
     ).aggregate(total=Sum('total'))['total'] or 0
 
+    if date_filter:
+        txns_base_url = f'/?date={date_filter}'
+    elif date_from and date_to:
+        txns_base_url = f'/?from={date_from}&to={date_to}'
+    else:
+        txns_base_url = '/'
+
     context = {
         'recent': recent,
-        'transactions': txs,
-        'creditors': creditors,
-        'items': items,
+        'transactions': transactions_page,
+        'creditors': creditors_page,
+        'items': items_page,
         'today_sales': today_sales,
         'date_filter': date_filter,
         'date_from': date_from,
         'date_to': date_to,
+        'txns_base_url': txns_base_url,
     }
     if request.headers.get('HX-Request'):
         return render(request, 'partials/_txns_tab_content.html', context)
@@ -111,17 +127,35 @@ def dashboard_partials(request):
     elif date_from and date_to:
         txs = txs.filter(created_at__date__gte=date_from, created_at__date__lte=date_to)
 
+    items_page = paginate(
+        Item.objects.annotate(tx_count=Count('transactions')).all(),
+        request, param_name='items_page'
+    )
+    creditors_page = paginate(
+        Creditor.objects.annotate(tx_count=Count('transactions')).all(),
+        request, param_name='creditors_page'
+    )
+    transactions_page = paginate(txs, request, param_name='page')
+
+    if date_filter:
+        txns_base_url = f'/?date={date_filter}'
+    elif date_from and date_to:
+        txns_base_url = f'/?from={date_from}&to={date_to}'
+    else:
+        txns_base_url = '/'
+
     context = {
         'recent': Transaction.objects.select_related('item', 'creditor').all()[:10],
-        'transactions': txs,
-        'items': Item.objects.annotate(tx_count=Count('transactions')).all(),
-        'creditors': Creditor.objects.annotate(tx_count=Count('transactions')).all(),
+        'transactions': transactions_page,
+        'items': items_page,
+        'creditors': creditors_page,
         'today_sales': Transaction.objects.filter(
             transaction_type='sale', created_at__date=today,
         ).aggregate(total=Sum('total'))['total'] or 0,
         'date_filter': date_filter,
         'date_from': date_from,
         'date_to': date_to,
+        'txns_base_url': txns_base_url,
     }
 
     html = {}
@@ -142,10 +176,13 @@ def dashboard_partials(request):
         elif s == 'txns':
             html['txns-table'] = render_to_string('partials/_transaction_table.html', {
                 **context,
-                'transactions': txs,
+                'transactions': transactions_page,
                 'show_creditor': True,
                 'show_actions': True,
                 'show_status': False,
+                'show_pagination': True,
+                'pagination_base_url': txns_base_url,
+                'pagination_hx_target': '#txns-section',
                 'empty_message': 'No transactions in this period.',
                 'max_height': '60vh',
             }, request=request)

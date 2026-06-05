@@ -1,3 +1,4 @@
+{% load pagination_tags %}
 {% if title %}<div class="flex items-center justify-between mb-3"><h3 class="font-semibold text-gray-800">{{ title|safe }}</h3></div>{% endif %}
 <div class="overflow-x-auto rounded-xl border border-gray-200"{% if max_height %} style="max-height:{{ max_height }};overflow-y:auto"{% endif %}>
     <table class="w-full text-xs sm:text-sm">
@@ -50,3 +51,6 @@
         </tbody>
     </table>
 </div>
+{% if show_pagination %}
+{% include 'partials/_pagination.html' with page_obj=transactions param_name='page' hx_target=pagination_hx_target base_url=pagination_base_url %}
+{% endif %}

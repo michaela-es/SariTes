@@ -4,6 +4,7 @@ from django.db.models import Q
 from .models import Creditor
 from .forms import CreditorForm
 from transactions.models import Transaction
+from sarites.pagination import paginate
 
 
 def creditor_list(request):
@@ -54,7 +55,8 @@ def creditor_delete(request, pk):
 def creditor_detail(request, pk):
     creditor = get_object_or_404(Creditor, pk=pk)
     transactions = Transaction.objects.filter(creditor=creditor, transaction_type='credit_sale').select_related('item').order_by('-created_at')
+    transactions_page = paginate(transactions, request, param_name='page')
     return render(request, 'creditors/creditor_detail.html', {
         'creditor': creditor,
-        'transactions': transactions,
+        'transactions': transactions_page,
     })
