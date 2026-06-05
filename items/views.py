@@ -28,7 +28,7 @@ def item_create(request):
             if request.headers.get('HX-Request'):
                 from django.http import HttpResponse
                 response = HttpResponse()
-                response['HX-Trigger'] = 'dashboard-updated'
+                response['HX-Trigger'] = 'dashboard-updated, close-modal'
                 return response
             return redirect('item_list')
     else:
@@ -46,7 +46,7 @@ def item_edit(request, pk):
             if request.headers.get('HX-Request'):
                 from django.http import HttpResponse
                 response = HttpResponse()
-                response['HX-Trigger'] = 'dashboard-updated'
+                response['HX-Trigger'] = 'dashboard-updated, close-modal'
                 return response
             return redirect('item_list')
     else:
