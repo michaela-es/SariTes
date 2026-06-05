@@ -126,7 +126,15 @@
         if (!el) return;
         var modal = bootstrap.Modal.getInstance(el);
         if (modal) modal.hide();
+        cleanupModal();
     }
+    function cleanupModal() {
+        document.querySelectorAll('.modal-backdrop').forEach(function(b) { b.remove(); });
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+    }
+    document.addEventListener('hidden.bs.modal', cleanupModal);
     function showToast(msg, type) {
         var el = document.getElementById('toast');
         if (!el) return;
@@ -142,6 +150,9 @@
         if (!document.body.classList.contains('dashboard-page')) location.reload();
     });
     document.addEventListener('close-modal', function() { closeModal('formModal'); });
+    document.body.addEventListener('htmx:beforeSwap', function(evt) {
+        if (evt.detail.target.id === 'formModalContent') cleanupModal();
+    });
     document.body.addEventListener('htmx:afterSwap', function(evt) {
         if (evt.detail.target.id === 'formModalContent') {
             var el = document.getElementById('formModal');
