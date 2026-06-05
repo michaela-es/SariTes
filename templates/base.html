@@ -135,10 +135,7 @@
         setTimeout(function() { el.classList.add('hidden'); }, 3000);
     }
     document.getElementById('nav-toggle')?.addEventListener('click', function() {
-        var mobile = document.getElementById('nav-mobile');
-        var links = document.getElementById('nav-links');
-        if (mobile) mobile.classList.toggle('hidden');
-        if (links) links.classList.toggle('hidden');
+        document.getElementById('nav-mobile')?.classList.toggle('hidden');
     });
     document.addEventListener('dashboard-updated', function() {
         if (!document.body.classList.contains('dashboard-page')) location.reload();
