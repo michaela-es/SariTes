@@ -43,7 +43,7 @@
                 </td>
                 <td class="px-4 py-2.5 text-center">
                     <button hx-get="{% url 'items:item_edit' item.pk %}" hx-target="#formModalContent" class="text-gray-600 hover:text-gray-900 mr-2 bg-transparent border-0 cursor-pointer"><i class="bi bi-pencil"></i></button>
-                    <a href="javascript:void(0)" hx-get="{% url 'items:item_delete' item.pk %}" hx-target="#formModalContent" class="text-red-500 hover:text-red-700"><i class="bi bi-trash"></i></a>
+                    <a href="" hx-get="{% url 'items:item_delete' item.pk %}" hx-target="#formModalContent" class="text-red-500 hover:text-red-700"><i class="bi bi-trash"></i></a>
                 </td>
             </tr>
             {% empty %}
