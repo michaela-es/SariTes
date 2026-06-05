@@ -1,4 +1,5 @@
 import json
+from urllib.parse import urlparse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, JsonResponse
 from django.db.models import Q, Count
@@ -59,6 +60,12 @@ def item_delete(request, pk):
     if request.method == 'POST':
         item.delete()
         if request.headers.get('HX-Request'):
+            current = request.headers.get('HX-Current-URL', '/')
+            if urlparse(current).path.startswith('/items/'):
+                response = HttpResponse()
+                response['HX-Location'] = current
+                response['HX-Trigger'] = 'close-modal'
+                return response
             response = HttpResponse()
             response['HX-Trigger'] = 'close-modal, dashboard-updated'
             return response
