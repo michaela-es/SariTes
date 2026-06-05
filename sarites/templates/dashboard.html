@@ -340,27 +340,23 @@ document.getElementById('excel-form')?.addEventListener('submit', function(e) {
 });
 
 // ── ITEMS FILTER ──
-function filterItems() {
-    const q = document.getElementById('items-search').value.toLowerCase();
-    const stockFilter = document.getElementById('items-stock-filter').value;
-    let low = 0, med = 0, high = 0;
+let itemsSearchTimer = null;
+document.getElementById('items-search')?.addEventListener('input', function() {
+    clearTimeout(itemsSearchTimer);
+    const q = this.value;
+    itemsSearchTimer = setTimeout(() => refreshSections(['items'], {q}), 300);
+});
+document.getElementById('items-stock-filter')?.addEventListener('change', function() {
     document.querySelectorAll('.item-row').forEach(row => {
-        const name = row.dataset.name;
         const stock = parseInt(row.dataset.stock);
-        const match = !q || name.includes(q);
-        let stockOk = true;
-        if (stockFilter === 'low') stockOk = stock <= 10;
-        else if (stockFilter === 'medium') stockOk = stock > 10 && stock <= 30;
-        else if (stockFilter === 'high') stockOk = stock > 30;
-        row.style.display = match && stockOk ? '' : 'none';
-        if (stock <= 10) low++; else if (stock <= 30) med++; else high++;
+        const val = this.value;
+        let ok = true;
+        if (val === 'low') ok = stock <= 10;
+        else if (val === 'medium') ok = stock > 10 && stock <= 30;
+        else if (val === 'high') ok = stock > 30;
+        row.style.display = ok ? '' : 'none';
     });
-    document.getElementById('lowCount').textContent = `Out/Low: ${low}`;
-    document.getElementById('medCount').textContent = `Medium: ${med}`;
-    document.getElementById('highCount').textContent = `High: ${high}`;
-}
-document.getElementById('items-search')?.addEventListener('input', filterItems);
-document.getElementById('items-stock-filter')?.addEventListener('change', filterItems);
+});
 
 // ── CREDITOR SEARCH ──
 document.getElementById('cred-search')?.addEventListener('input', function() {
@@ -371,17 +367,30 @@ document.getElementById('cred-search')?.addEventListener('input', function() {
 });
 
 // ── SPA PARTIAL REFRESH ──
-function refreshSections(sections) {
+function refreshSections(sections, extraParams) {
+    const params = new URLSearchParams();
+    params.set('sections', sections.join(','));
     const qs = window.location.search.replace(/^\?/, '');
-    const url = '/dashboard-partials/?sections=' + sections.join(',') + (qs ? '&' + qs : '');
-    fetch(url)
+    if (qs) new URLSearchParams(qs).forEach((v, k) => { if (!params.has(k)) params.set(k, v); });
+    if (extraParams) Object.keys(extraParams).forEach(k => params.set(k, extraParams[k]));
+    fetch('/dashboard-partials/?' + params.toString())
         .then(r => r.json())
         .then(html => {
             Object.keys(html).forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.innerHTML = html[id];
             });
-            if (html['items-table']) filterItems();
+            if (html['items-table']) {
+                const val = document.getElementById('items-stock-filter').value;
+                if (val) document.querySelectorAll('.item-row').forEach(row => {
+                    const stock = parseInt(row.dataset.stock);
+                    let ok = true;
+                    if (val === 'low') ok = stock <= 10;
+                    else if (val === 'medium') ok = stock > 10 && stock <= 30;
+                    else if (val === 'high') ok = stock > 30;
+                    row.style.display = ok ? '' : 'none';
+                });
+            }
         });
 }
 

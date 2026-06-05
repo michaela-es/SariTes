@@ -1,4 +1,5 @@
 from django import template
+from django.utils.safestring import mark_safe
 
 register = template.Library()
 
@@ -7,4 +8,4 @@ def url_replace(context, **kwargs):
     query = context['request'].GET.copy()
     for k, v in kwargs.items():
         query[k] = v
-    return query.urlencode()
+    return mark_safe(query.urlencode())
