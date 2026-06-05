@@ -11,6 +11,16 @@
        hx-get="/?date=month" hx-target="#txns-section" hx-swap="outerHTML" hx-push-url="?date=month#txns"
        class="px-3 py-1.5 rounded-lg text-xs font-medium border transition {% if date_filter == 'month' %}bg-gray-900 text-white border-gray-900{% else %}bg-white text-gray-600 border-gray-300 hover:bg-gray-100{% endif %}">This Month</a>
     <span class="w-px h-6 bg-gray-300"></span>
+    <a href="?type=sale{% if date_filter %}&date={{ date_filter }}{% elif date_from %}&from={{ date_from }}&to={{ date_to }}{% endif %}#txns"
+       hx-get="/?type=sale{% if date_filter %}&date={{ date_filter }}{% elif date_from %}&from={{ date_from }}&to={{ date_to }}{% endif %}" hx-target="#txns-section" hx-swap="outerHTML" hx-push-url="true"
+       class="px-3 py-1.5 rounded-lg text-xs font-medium border transition {% if filter_type == 'sale' %}bg-blue-900 text-white border-blue-900{% else %}bg-white text-gray-600 border-gray-300 hover:bg-gray-100{% endif %}">Sales</a>
+    <a href="?type=credit_sale{% if date_filter %}&date={{ date_filter }}{% elif date_from %}&from={{ date_from }}&to={{ date_to }}{% endif %}#txns"
+       hx-get="/?type=credit_sale{% if date_filter %}&date={{ date_filter }}{% elif date_from %}&from={{ date_from }}&to={{ date_to }}{% endif %}" hx-target="#txns-section" hx-swap="outerHTML" hx-push-url="true"
+       class="px-3 py-1.5 rounded-lg text-xs font-medium border transition {% if filter_type == 'credit_sale' %}bg-cyan-900 text-white border-cyan-900{% else %}bg-white text-gray-600 border-gray-300 hover:bg-gray-100{% endif %}">Credit</a>
+    <a href="?{% if date_filter %}date={{ date_filter }}{% elif date_from %}from={{ date_from }}&to={{ date_to }}{% endif %}#txns"
+       hx-get="/?{% if date_filter %}date={{ date_filter }}{% elif date_from %}from={{ date_from }}&to={{ date_to }}{% endif %}" hx-target="#txns-section" hx-swap="outerHTML" hx-push-url="true"
+       class="px-3 py-1.5 rounded-lg text-xs font-medium border transition {% if not filter_type %}bg-gray-900 text-white border-gray-900{% else %}bg-white text-gray-600 border-gray-300 hover:bg-gray-100{% endif %}">All</a>
+    <span class="w-px h-6 bg-gray-300"></span>
     <form hx-get="/" hx-target="#txns-section" hx-swap="outerHTML" hx-push-url="true" class="flex items-center gap-1">
         <input type="date" name="from" value="{{ date_from }}" class="px-2 py-1.5 border border-gray-300 rounded-lg text-xs w-32 focus:ring-2 focus:ring-gray-900 focus:outline-none">
         <span class="text-gray-400">—</span>
@@ -22,6 +32,10 @@
            class="px-3 py-1.5 bg-red-500 text-white rounded-lg text-xs font-medium hover:bg-red-600 transition"><i class="bi bi-x"></i></a>
         {% endif %}
     </form>
+    <a href="{% url 'transactions:transaction_export' %}?{% if date_filter %}date={{ date_filter }}&{% endif %}{% if ttype %}type={{ ttype }}&{% endif %}{% if date_from %}from={{ date_from }}&to={{ date_to }}&{% endif %}print=1" target="_blank"
+       class="ml-auto px-3 py-1.5 rounded-lg text-xs font-medium border border-gray-300 bg-white text-gray-600 hover:bg-gray-100 transition flex items-center gap-1">
+        <i class="bi bi-printer"></i> Export
+    </a>
 </div>
 <div id="txns-table">
 {% include 'partials/_transaction_table.html' with transactions=transactions show_creditor=True show_actions=True show_status=False empty_message="No transactions in this period." max_height="60vh" show_pagination=True pagination_hx_target='#txns-section' pagination_hx_hash='#txns' %}

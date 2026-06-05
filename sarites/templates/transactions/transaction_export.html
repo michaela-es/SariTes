@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction Report — SariTes</title>
+    <style>
+        @page { size: A4; margin: 15mm; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 11px; color: #222; margin: 0; padding: 20px; }
+        h1 { font-size: 18px; margin: 0 0 4px; }
+        .sub { color: #666; font-size: 11px; margin-bottom: 16px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f3f4f6; text-align: left; padding: 6px 8px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: #555; }
+        td { padding: 5px 8px; border-bottom: 1px solid #e5e7eb; }
+        .text-right { text-align: right; }
+        .total-row td { border-top: 2px solid #111; font-weight: 700; padding-top: 8px; }
+        .footer { margin-top: 24px; font-size: 10px; color: #999; text-align: center; }
+        @media print { body { padding: 0; } .no-print { display: none; } }
+    </style>
+</head>
+<body>
+    <div class="no-print" style="margin-bottom:16px">
+        <button onclick="window.print()" style="padding:6px 16px;font-size:12px;border:1px solid #ccc;border-radius:4px;background:#fff;cursor:pointer">Print / Save PDF</button>
+    </div>
+
+    <h1>SariTes — Transaction Report</h1>
+    <div class="sub">
+        {% if date_filter == 'today' %}Today
+        {% elif date_filter == 'week' %}This Week
+        {% elif date_filter == 'month' %}This Month
+        {% elif date_from and date_to %}{{ date_from }} to {{ date_to }}
+        {% else %}All Time{% endif %}
+        {% if filter_type %} · {{ filter_type|title }}{% endif %}
+        — {{ transactions|length }} transactions · Total: ₱{{ totals|floatformat:2 }}
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Item</th>
+                <th>Type</th>
+                <th>Qty</th>
+                <th>Price</th>
+                <th class="text-right">Total</th>
+                {% if not filter_type or filter_type == 'credit_sale' %}<th>Creditor</th>{% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in transactions %}
+            <tr>
+                <td>{{ t.created_at|date:"M d, H:i" }}</td>
+                <td>{{ t.item.name }}</td>
+                <td>{{ t.get_transaction_type_display }}</td>
+                <td>{{ t.qty }}</td>
+                <td>₱{{ t.unit_price|floatformat:2 }}</td>
+                <td class="text-right">₱{{ t.total|floatformat:2 }}</td>
+                {% if not filter_type or filter_type == 'credit_sale' %}<td>{{ t.creditor.name|default:"—" }}</td>{% endif %}
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" style="text-align:center;padding:24px;color:#999">No transactions.</td></tr>
+            {% endfor %}
+            <tr class="total-row">
+                <td colspan="{% if not filter_type or filter_type == 'credit_sale' %}5{% else %}4{% endif %}">Total</td>
+                <td class="text-right">₱{{ totals|floatformat:2 }}</td>
+                {% if not filter_type or filter_type == 'credit_sale' %}<td></td>{% endif %}
+            </tr>
+        </tbody>
+    </table>
+    <div class="footer">Generated on {% now "F d, Y H:i" %} — SariTes</div>
+
+    <script>window.onload = function() { if (window.location.search.includes('print=1')) setTimeout(function() { window.print(); }, 500); }</script>
+</body>
+</html>

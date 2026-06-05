@@ -165,3 +165,33 @@ def mark_all_paid(request, creditor_id):
             return response
         return redirect(request.META.get('HTTP_REFERER', '/'))
     return redirect(request.META.get('HTTP_REFERER', '/'))
+
+
+def transaction_export(request):
+    today = timezone.now().date()
+    ttype = request.GET.get('type', '')
+    date_filter = request.GET.get('date', '')
+    date_from = request.GET.get('from', '')
+    date_to = request.GET.get('to', '')
+
+    txs = Transaction.objects.select_related('item', 'creditor').all().order_by('-created_at')
+    if ttype:
+        txs = txs.filter(transaction_type=ttype)
+    if date_filter == 'today':
+        txs = txs.filter(created_at__date=today)
+    elif date_filter == 'week':
+        txs = txs.filter(created_at__date__gte=today - timedelta(days=today.weekday()))
+    elif date_filter == 'month':
+        txs = txs.filter(created_at__date__gte=today.replace(day=1))
+    elif date_from and date_to:
+        txs = txs.filter(created_at__date__gte=date_from, created_at__date__lte=date_to)
+
+    totals = txs.aggregate(total_sum=Sum('total'))['total_sum'] or 0
+    return render(request, 'transactions/transaction_export.html', {
+        'transactions': txs,
+        'totals': totals,
+        'filter_type': ttype,
+        'date_filter': date_filter,
+        'date_from': date_from,
+        'date_to': date_to,
+    })

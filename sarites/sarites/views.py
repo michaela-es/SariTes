@@ -17,11 +17,14 @@ def dashboard(request):
     month_start = today.replace(day=1)
 
     q = request.GET.get('q', '')
+    ttype = request.GET.get('type', '')
     date_filter = request.GET.get('date', '')
     date_from = request.GET.get('from', '')
     date_to = request.GET.get('to', '')
 
     txs = Transaction.objects.select_related('item', 'creditor').all()
+    if ttype:
+        txs = txs.filter(transaction_type=ttype)
     if date_filter == 'today':
         txs = txs.filter(created_at__date=today)
     elif date_filter == 'week':
@@ -57,6 +60,7 @@ def dashboard(request):
         'date_from': date_from,
         'date_to': date_to,
         'search_query': q,
+        'filter_type': ttype,
     }
     if request.headers.get('HX-Request'):
         target = request.headers.get('HX-Target', '')
@@ -113,11 +117,14 @@ def dashboard_partials(request):
         sections.extend([x.strip() for x in s.split(',') if x.strip()])
 
     q = request.GET.get('q', '')
+    ttype = request.GET.get('type', '')
     date_filter = request.GET.get('date', '')
     date_from = request.GET.get('from', '')
     date_to = request.GET.get('to', '')
 
     txs = Transaction.objects.select_related('item', 'creditor').all()
+    if ttype:
+        txs = txs.filter(transaction_type=ttype)
     if date_filter == 'today':
         txs = txs.filter(created_at__date=today)
     elif date_filter == 'week':
@@ -149,6 +156,7 @@ def dashboard_partials(request):
         'date_from': date_from,
         'date_to': date_to,
         'search_query': q,
+        'filter_type': ttype,
     }
 
     html = {}
