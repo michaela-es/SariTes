@@ -194,10 +194,16 @@ function switchTab(name) {
     if (name === 'items') filterItems();
 }
 
+function clearPageParams(url) {
+    const u = new URL(url, window.location.origin);
+    ['page', 'items_page', 'creditors_page', 'q'].forEach(k => u.searchParams.delete(k));
+    return u.pathname + u.search + u.hash;
+}
+
 document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         switchTab(btn.dataset.tab);
-        history.replaceState(null, '', '#' + btn.dataset.tab);
+        history.replaceState(null, '', clearPageParams('#' + btn.dataset.tab));
     });
 });
 
