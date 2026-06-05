@@ -4,7 +4,7 @@ A Django inventory management system built for sari-sari stores, evolved from th
 
 ## Key Difference: NLP Quick Entry
 
-Unlike Innoventory's traditional form-based transaction logging, SariTes uses a **natural language input** for faster, more intuitive logging:
+Unlike Innoventory's traditional form-based transaction logging, SariTes uses a **pattern-based natural language command interface** for faster, more intuitive logging:
 
 ```
 5 Coke          → sell 5 Coke (defaults to Sale)
