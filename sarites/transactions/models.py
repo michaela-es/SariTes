@@ -24,10 +24,13 @@ class Transaction(models.Model):
         ordering = ['-created_at']
 
     def save(self, *args, **kwargs):
-        if self.unit_price is None:
-            self.unit_price = self.item.price
-        if self.total is None:
-            self.total = self.unit_price * self.qty
+        if self.transaction_type in ('stock_in', 'stock_out'):
+            self.total = 0
+        else:
+            if self.unit_price is None:
+                self.unit_price = self.item.price
+            if self.total is None:
+                self.total = self.unit_price * self.qty
         super().save(*args, **kwargs)
 
     def __str__(self):
