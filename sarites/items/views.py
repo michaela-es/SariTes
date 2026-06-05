@@ -75,7 +75,7 @@ def item_delete(request, pk):
             html = render_to_string('partials/_items_table.html', {'items': items_page}, request=request)
             response = HttpResponse(html)
             response['HX-Retarget'] = '#items-table'
-            response['HX-Trigger'] = 'close-modal'
+            response['HX-Trigger'] = 'close-modal, dashboard-updated'
             return response
         return redirect('item_list')
     if request.headers.get('HX-Request'):

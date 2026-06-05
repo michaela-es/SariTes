@@ -132,10 +132,8 @@ def transaction_delete(request, pk):
     if request.method == 'POST':
         transaction.delete()
         if request.headers.get('HX-Request'):
-            current_url = request.headers.get('HX-Current-URL', '/transactions/')
             response = HttpResponse()
-            response['HX-Location'] = current_url
-            response['HX-Trigger'] = 'close-modal'
+            response['HX-Trigger'] = 'dashboard-updated, close-modal'
             return response
         return redirect('transaction_list')
     if request.headers.get('HX-Request'):
