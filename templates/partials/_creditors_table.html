@@ -18,8 +18,8 @@
                 <td class="px-2 sm:px-4 py-1.5 sm:py-2.5 text-right font-medium whitespace-nowrap">₱{{ c.total_balance|floatformat:2 }}</td>
                 <td class="hidden sm:table-cell px-2 sm:px-4 py-1.5 sm:py-2.5 text-right">{{ c.tx_count }}</td>
                 <td class="px-2 sm:px-4 py-1.5 sm:py-2.5 text-center whitespace-nowrap">
-                    <a href="{% url 'creditors:creditor_detail' c.id %}" class="text-cyan-600 hover:text-cyan-800 mr-1 sm:mr-2"><i class="bi bi-eye text-xs sm:text-sm"></i></a>
-                    <button hx-get="{% url 'creditors:creditor_edit' c.pk %}" hx-target="#formModalContent" class="text-gray-600 hover:text-gray-800 bg-transparent border-0 cursor-pointer"><i class="bi bi-pencil text-xs sm:text-sm"></i></button>
+                    <a href="{% url 'creditors:creditor_detail' c.id %}" class="text-cyan-600 hover:text-cyan-800 mr-1 sm:mr-2 p-1.5 sm:p-0 inline-block"><i class="bi bi-eye text-sm sm:text-sm"></i></a>
+                    <button hx-get="{% url 'creditors:creditor_edit' c.pk %}" hx-target="#formModalContent" class="text-gray-600 hover:text-gray-800 bg-transparent border-0 cursor-pointer p-1.5 sm:p-0"><i class="bi bi-pencil text-sm sm:text-sm"></i></button>
                 </td>
             </tr>
             {% empty %}

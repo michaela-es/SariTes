@@ -61,7 +61,7 @@ def transaction_create(request):
             form.save()
             if request.headers.get('HX-Request'):
                 response = HttpResponse()
-                response['HX-Trigger'] = 'dashboard-updated'
+                response['HX-Trigger'] = 'dashboard-updated, close-modal'
                 return response
             return redirect('transaction_list')
     else:
