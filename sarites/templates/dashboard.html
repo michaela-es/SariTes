@@ -300,8 +300,8 @@ if (nlpInput) {
                     const typeColors = {stock_in: 'bg-green-100 text-green-700', stock_out: 'bg-yellow-100 text-yellow-700', sale: 'bg-blue-100 text-blue-700', credit_sale: 'bg-cyan-100 text-cyan-700'};
                     const tc = typeColors[data.transaction_type] || 'bg-gray-100 text-gray-700';
                     let html = `<span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium ${tc} mr-2">${typeLabels[data.transaction_type] || data.transaction_type}</span>`;
-                    html += `<span class="text-amber-700 font-semibold">NEW: ${data.parsed_name}</span>`;
-                    html += ` <span class="text-xs text-gray-500">Price:</span> <input type="number" step="0.01" id="new-item-price" class="w-20 px-2 py-0.5 border border-gray-300 rounded text-sm" placeholder="0.00" value="${suggested}">`;
+                    html += `<span class="text-amber-700 font-semibold">${data.qty}x NEW: ${data.parsed_name}</span>`;
+                    html += ` <span class="text-xs text-gray-500">Price:</span> <input type="text" inputmode="decimal" id="new-item-price" class="w-20 px-2 py-0.5 border border-gray-300 rounded text-sm" placeholder="0.00" value="${suggested}">`;
                     if (data.creditor) html += ` <span class="inline-block px-2 py-0.5 rounded-full text-xs bg-cyan-100 text-cyan-700">@${data.creditor.name}</span>`;
                     p.innerHTML = html;
                 } else {

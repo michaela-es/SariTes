@@ -145,6 +145,7 @@ def nlp_search(request):
         'match': False,
         'is_new_item': True,
         'parsed_name': parsed['name'],
+        'qty': parsed['qty'],
         'transaction_type': parsed['transaction_type'],
         'suggested_price': suggested_price,
         'creditor': creditor_data,

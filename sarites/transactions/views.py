@@ -98,7 +98,7 @@ def quick_sale(request):
         qty = parsed['qty']
         reduces_stock = ttype in ('sale', 'credit_sale', 'stock_out')
 
-        unit_price = float(item.price)
+        unit_price = parsed.get('unit_price') or float(item.price)
         total = unit_price * qty
 
         if reduces_stock:
