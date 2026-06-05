@@ -2,6 +2,10 @@
 
 A Django inventory management system built for sari-sari stores, evolved from the **CSIT327-G1-InnoVentory** project.
 
+> **Single-tenant** — not designed for multi-store or multi-user use. Intended for one sari-sari store operated by the owner.
+>
+> **Testing status** — user testing currently underway, conducted personally by the developer.
+
 ## Key Difference: NLP Quick Entry
 
 Unlike Innoventory's traditional form-based transaction logging, SariTes uses a **pattern-based natural language command interface** for faster, more intuitive logging:
@@ -38,7 +42,6 @@ This reduces a multi-click form to a single text entry, making day-to-day operat
 
 ```bash
 pip install -r requirements.txt
-cd sarites
 python manage.py migrate
 python manage.py seed                          # sample data
 python manage.py createsuperuser --username admin  # create login credentials
