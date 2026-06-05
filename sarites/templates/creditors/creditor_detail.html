@@ -27,15 +27,4 @@
     <h3 class="font-semibold text-gray-800 mb-3">Transactions</h3>
     {% include 'partials/_transaction_table.html' with transactions=transactions show_creditor=False show_actions=True show_status=True empty_message="No transactions for this creditor." show_pagination=True %}
 </div>
-
-<div id="formModal" class="fixed inset-0 z-50 hidden bg-black/40 items-center justify-center" onclick="if(event.target===this)closeModal('formModal')">
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4 overflow-hidden" id="formModalContent" onclick="event.stopPropagation()"></div>
-</div>
-{% endblock %}
-
-{% block extra_scripts %}
-<script>
-function openModal(id) { document.getElementById(id).classList.remove('hidden'); document.getElementById(id).classList.add('flex'); }
-function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
-</script>
 {% endblock %}

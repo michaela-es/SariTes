@@ -9,16 +9,4 @@
 </div>
 
 {% include 'transactions/partials/_transaction_list_content.html' %}
-
-<div id="formModal" class="fixed inset-0 z-50 hidden bg-black/40 items-center justify-center" onclick="if(event.target===this)closeModal('formModal')">
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4 overflow-hidden" id="formModalContent" onclick="event.stopPropagation()"></div>
-</div>
-{% endblock %}
-
-{% block extra_scripts %}
-<script>
-function openModal(id) { document.getElementById(id).classList.remove('hidden'); document.getElementById(id).classList.add('flex'); }
-function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
-document.addEventListener('close-modal', function() { closeModal('formModal'); });
-</script>
 {% endblock %}
