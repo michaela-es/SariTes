@@ -24,6 +24,6 @@
     </form>
 </div>
 <div id="txns-table">
-{% include 'partials/_transaction_table.html' with transactions=transactions show_creditor=True show_actions=True show_status=False empty_message="No transactions in this period." max_height="60vh" show_pagination=True pagination_hx_target='#txns-section' %}
+{% include 'partials/_transaction_table.html' with transactions=transactions show_creditor=True show_actions=True show_status=False empty_message="No transactions in this period." max_height="60vh" show_pagination=True pagination_hx_target='#txns-section' pagination_hx_hash='#txns' %}
 </div>
 </div>

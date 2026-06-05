@@ -23,8 +23,8 @@
                     </span>
                 </td>
                 <td class="px-2 sm:px-4 py-1.5 sm:py-2.5 text-center whitespace-nowrap">
-                    <button hx-get="{% url 'items:item_edit' item.pk %}" hx-target="#formModalContent" onclick="openModal('formModal')" class="text-gray-600 hover:text-gray-900 mr-1 sm:mr-2 bg-transparent border-0 cursor-pointer"><i class="bi bi-pencil text-xs sm:text-sm"></i></button>
-                    <a href="#" hx-get="{% url 'items:item_delete' item.pk %}" hx-target="#formModalContent" onclick="openModal('formModal')" class="text-red-500 hover:text-red-700"><i class="bi bi-trash text-xs sm:text-sm"></i></a>
+                    <button hx-get="{% url 'items:item_edit' item.pk %}" hx-target="#formModalContent" class="text-gray-600 hover:text-gray-900 mr-1 sm:mr-2 bg-transparent border-0 cursor-pointer"><i class="bi bi-pencil text-xs sm:text-sm"></i></button>
+                    <a href="#" hx-get="{% url 'items:item_delete' item.pk %}" hx-target="#formModalContent" class="text-red-500 hover:text-red-700"><i class="bi bi-trash text-xs sm:text-sm"></i></a>
                 </td>
             </tr>
             {% empty %}
@@ -33,4 +33,4 @@
         </tbody>
     </table>
 </div>
-{% include 'partials/_pagination.html' with page_obj=items param_name='items_page' hx_target='#items-table' %}
+{% include 'partials/_pagination.html' with page_obj=items param_name='items_page' hx_target='#items-table' hx_swap='innerHTML' hx_hash='#items' %}

@@ -19,7 +19,7 @@
                 <td class="hidden sm:table-cell px-2 sm:px-4 py-1.5 sm:py-2.5 text-right">{{ c.tx_count }}</td>
                 <td class="px-2 sm:px-4 py-1.5 sm:py-2.5 text-center whitespace-nowrap">
                     <a href="{% url 'creditors:creditor_detail' c.id %}" class="text-cyan-600 hover:text-cyan-800 mr-1 sm:mr-2"><i class="bi bi-eye text-xs sm:text-sm"></i></a>
-                    <button hx-get="{% url 'creditors:creditor_edit' c.pk %}" hx-target="#formModalContent" onclick="openModal('formModal')" class="text-gray-600 hover:text-gray-800 bg-transparent border-0 cursor-pointer"><i class="bi bi-pencil text-xs sm:text-sm"></i></button>
+                    <button hx-get="{% url 'creditors:creditor_edit' c.pk %}" hx-target="#formModalContent" class="text-gray-600 hover:text-gray-800 bg-transparent border-0 cursor-pointer"><i class="bi bi-pencil text-xs sm:text-sm"></i></button>
                 </td>
             </tr>
             {% empty %}
@@ -28,4 +28,4 @@
         </tbody>
     </table>
 </div>
-{% include 'partials/_pagination.html' with page_obj=creditors param_name='creditors_page' hx_target='#creditors-table' %}
+{% include 'partials/_pagination.html' with page_obj=creditors param_name='creditors_page' hx_target='#creditors-table' hx_swap='innerHTML' hx_hash='#cred' %}

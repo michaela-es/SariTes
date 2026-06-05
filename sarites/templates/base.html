@@ -87,7 +87,6 @@
     function openModal(id) {
         var el = document.getElementById(id);
         if (!el) return;
-        if (id === 'formModal') document.getElementById('formModalContent').innerHTML = '';
         bootstrap.Modal.getOrCreateInstance(el).show();
     }
     function closeModal(id) {
@@ -108,6 +107,12 @@
         if (!document.body.classList.contains('dashboard-page')) location.reload();
     });
     document.addEventListener('close-modal', function() { closeModal('formModal'); });
+    document.body.addEventListener('htmx:afterSwap', function(evt) {
+        if (evt.detail.target.id === 'formModalContent') {
+            var el = document.getElementById('formModal');
+            if (el) bootstrap.Modal.getOrCreateInstance(el).show();
+        }
+    });
     </script>
     {% block extra_scripts %}{% endblock %}
 </body>
