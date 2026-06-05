@@ -191,7 +191,6 @@ function switchTab(name) {
     document.querySelector(`[data-tab="${name}"]`).classList.add('active');
     document.getElementById('tab-' + name).classList.add('active');
     if (name === 'charts') loadCharts();
-    if (name === 'items') filterItems();
 }
 
 function clearPageParams(url) {
