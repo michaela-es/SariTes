@@ -9,7 +9,7 @@
 .tab-pane.active{ display: block; }
 .nlp-preview{ min-height: 2.5rem; }
 </style>
-<script>document.addEventListener('DOMContentLoaded', () => document.body.classList.add('dashboard-page'));</script>
+<script>document.addEventListener('DOMContentLoaded', () => { document.body.classList.add('dashboard-page'); countStockLevels(); });</script>
 {% endblock %}
 
 {% block content %}
@@ -351,6 +351,20 @@ document.getElementById('items-search')?.addEventListener('input', function() {
     const q = this.value;
     itemsSearchTimer = setTimeout(() => refreshSections(['items'], {q}), 300);
 });
+function countStockLevels() {
+    let high = 0, med = 0, low = 0;
+    document.querySelectorAll('.item-row').forEach(row => {
+        const stock = parseInt(row.dataset.stock);
+        if (stock === 0) low++;
+        else if (stock <= 10) low++;
+        else if (stock <= 30) med++;
+        else high++;
+    });
+    document.getElementById('highCount').textContent = 'High (' + high + ')';
+    document.getElementById('medCount').textContent = 'Medium (' + med + ')';
+    document.getElementById('lowCount').textContent = 'Low (' + low + ')';
+}
+
 document.getElementById('items-stock-filter')?.addEventListener('change', function() {
     document.querySelectorAll('.item-row').forEach(row => {
         const stock = parseInt(row.dataset.stock);
@@ -386,6 +400,7 @@ function refreshSections(sections, extraParams) {
                 if (el) el.innerHTML = html[id];
             });
             if (html['items-table']) {
+                countStockLevels();
                 const val = document.getElementById('items-stock-filter').value;
                 if (val) document.querySelectorAll('.item-row').forEach(row => {
                     const stock = parseInt(row.dataset.stock);
